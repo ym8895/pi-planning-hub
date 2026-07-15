@@ -21,7 +21,7 @@ const TTL = 30_000; // 30 seconds
 export function CacheProvider({ children }: { children: ReactNode }) {
   const cache = useRef<Map<string, CacheEntry>>(new Map());
 
-  const get = useCallback <T>(key: string): T | null => {
+  const get = useCallback(<T,>(key: string): T | null => {
     const entry = cache.current.get(key);
     if (!entry) return null;
     if (Date.now() - entry.timestamp > TTL) {
