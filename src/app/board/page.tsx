@@ -30,7 +30,7 @@ interface Dependency {
   toStory: { id: string; name: string; team: { name: string; color: string } } | null;
 }
 interface BoardData {
-  pi: { name: string; startDate: string; endDate: string; status: string; iterations: Iteration[] } | null;
+  pi: { id: string; name: string; startDate: string; endDate: string; status: string; iterations: Iteration[] } | null;
   allPIs: PI[];
   teams: Team[];
   stories: { id: string; name: string; teamId: string | null; iterationId: string | null; status: string; storyPoints: number; feature: { name: string } | null }[];
@@ -129,6 +129,13 @@ export default function BoardPage() {
   const [storyFormOpen, setStoryFormOpen] = useState(false);
   const [editingStory, setEditingStory] = useState<any>(null);
   const [storyFormContext, setStoryFormContext] = useState<{ featureId?: string; teamId?: string; iterationId?: string }>({});
+
+  const boardRef = useRef<HTMLDivElement>(null);
+  const [depLines, setDepLines] = useState<{ x1: number; y1: number; x2: number; y2: number; color: string; status: string }[]>([]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  );
 
   const boardUrl = useMemo(() => {
     const params = new URLSearchParams();

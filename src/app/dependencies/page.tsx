@@ -46,7 +46,7 @@ export default function DependenciesPage() {
           <Card>
             <CardContent className="p-2 md:p-4">
               <p className="text-[10px] md:text-sm text-muted-foreground">Total</p>
-              <p className="text-lg md:text-2xl font-bold">{deps.length}</p>
+              <p className="text-lg md:text-2xl font-bold">{(deps ?? []).length}</p>
             </CardContent>
           </Card>
           <Card>
@@ -90,14 +90,14 @@ export default function DependenciesPage() {
                       Loading dependencies...
                     </TableCell>
                   </TableRow>
-                ) : deps.length === 0 ? (
+                ) : (deps ?? []).length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-4 md:py-8 text-[10px] md:text-xs text-muted-foreground">
                       No dependencies found
                     </TableCell>
                   </TableRow>
                 ) : (
-                  deps.map((dep) => {
+                  (deps ?? []).map((dep) => {
                     const sc = statusConfig[dep.status] ?? statusConfig.OPEN;
                     const Icon = sc.icon;
                     return (
