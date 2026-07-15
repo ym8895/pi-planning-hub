@@ -57,6 +57,7 @@ export async function GET() {
 
       const depCounts = await prisma.dependency.groupBy({
         by: ["status"],
+        _count: true,
       });
       const depMap: Record<string, number> = {};
       depCounts.forEach(d => { depMap[d.status] = d._count; });
