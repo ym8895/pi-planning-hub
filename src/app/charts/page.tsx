@@ -42,7 +42,7 @@ const chartTypes = [
   { id: "velocity", label: "Velocity", icon: BarChart3, color: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/30" },
   { id: "burndown", label: "Burndown", icon: Flame, color: "text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/30" },
   { id: "burnup", label: "Burnup", icon: TrendingUp, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/30" },
-  { id: "cumulative", label: "Cumulative Flow", icon: Layers, color: "text-cyan-400", bg: "bg-cyan-500/10", border: "border-cyan-500/30" },
+  { id: "cumulative", label: "Cumulative", icon: Layers, color: "text-cyan-400", bg: "bg-cyan-500/10", border: "border-cyan-500/30" },
   { id: "predictability", label: "Predictability", icon: Target, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/30" },
 ];
 
@@ -125,15 +125,15 @@ export default function ChartsPage() {
 
   return (
     <AppShell>
-      <div className="space-y-4">
+      <div className="space-y-3 md:space-y-4">
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold">Charts & Analytics</h1>
-          <p className="text-muted-foreground">Select a chart type and filter by team, PI, or sprint</p>
+          <h1 className="text-lg md:text-2xl font-bold">Charts & Analytics</h1>
+          <p className="text-xs md:text-sm text-muted-foreground">Select a chart type and filter by team, PI, or sprint</p>
         </div>
 
         {/* Chart Selector Cards */}
-        <div className="grid grid-cols-5 gap-3">
+        <div className="grid grid-cols-5 gap-1.5 md:gap-3">
           {chartTypes.map((chart) => {
             const Icon = chart.icon;
             const isActive = activeChart === chart.id;
@@ -142,14 +142,14 @@ export default function ChartsPage() {
                 key={chart.id}
                 onClick={() => setActiveChart(chart.id)}
                 className={cn(
-                  "flex flex-col items-center gap-2 rounded-xl border p-4 transition-all",
+                  "flex flex-col items-center gap-1 md:gap-2 rounded-lg md:rounded-xl border p-2 md:p-4 transition-all",
                   isActive
                     ? `${chart.bg} ${chart.border} border`
                     : "bg-white/[.02] border-white/5 hover:bg-white/[.04]"
                 )}
               >
-                <Icon className={cn("h-5 w-5", isActive ? chart.color : "text-muted-foreground")} />
-                <span className={cn("text-xs font-medium", isActive ? "text-foreground" : "text-muted-foreground")}>
+                <Icon className={cn("h-4 w-4 md:h-5 md:w-5", isActive ? chart.color : "text-muted-foreground")} />
+                <span className={cn("text-[9px] md:text-xs font-medium", isActive ? "text-foreground" : "text-muted-foreground")}>
                   {chart.label}
                 </span>
               </button>
@@ -158,11 +158,11 @@ export default function ChartsPage() {
         </div>
 
         {/* Filters */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Team:</span>
+        <div className="flex flex-wrap items-center gap-2 md:gap-4">
+          <div className="flex items-center gap-1.5 md:gap-2">
+            <span className="text-[10px] md:text-sm text-muted-foreground">Team:</span>
             <Select value={selectedTeam} onValueChange={setSelectedTeam}>
-              <SelectTrigger className="w-40 h-8">
+              <SelectTrigger className="w-28 md:w-40 h-7 md:h-8 text-[10px] md:text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -173,10 +173,10 @@ export default function ChartsPage() {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">PI:</span>
+          <div className="flex items-center gap-1.5 md:gap-2">
+            <span className="text-[10px] md:text-sm text-muted-foreground">PI:</span>
             <Select value={selectedPi} onValueChange={(v) => { setSelectedPi(v); setSelectedSprint("all"); }}>
-              <SelectTrigger className="w-40 h-8">
+              <SelectTrigger className="w-28 md:w-40 h-7 md:h-8 text-[10px] md:text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -187,10 +187,10 @@ export default function ChartsPage() {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Sprint:</span>
+          <div className="flex items-center gap-1.5 md:gap-2">
+            <span className="text-[10px] md:text-sm text-muted-foreground">Sprint:</span>
             <Select value={selectedSprint} onValueChange={setSelectedSprint}>
-              <SelectTrigger className="w-40 h-8">
+              <SelectTrigger className="w-28 md:w-40 h-7 md:h-8 text-[10px] md:text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -205,28 +205,28 @@ export default function ChartsPage() {
 
         {/* Active Chart */}
         <Card>
-          <CardHeader>
+          <CardHeader className="p-3 md:p-6">
             <div className="flex items-center gap-2">
               {chartTypes.find((c) => c.id === activeChart) && (() => {
                 const Icon = chartTypes.find((c) => c.id === activeChart)!.icon;
                 return <Icon className={cn("h-4 w-4", chartTypes.find((c) => c.id === activeChart)!.color)} />;
               })()}
-              <CardTitle className="text-sm">{chartTypes.find((c) => c.id === activeChart)?.label}</CardTitle>
+              <CardTitle className="text-xs md:text-sm">{chartTypes.find((c) => c.id === activeChart)?.label}</CardTitle>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-2 md:p-6">
             {/* Velocity */}
             {activeChart === "velocity" && (
-              <ResponsiveContainer width="100%" height={350}>
+              <ResponsiveContainer width="100%" height={280}>
                 <BarChart data={filteredVelocity}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                  <XAxis dataKey="sprint" tick={{ fill: "#94a3b8", fontSize: 11 }} />
-                  <YAxis tick={{ fill: "#94a3b8", fontSize: 11 }} />
+                  <XAxis dataKey="sprint" tick={{ fill: "#94a3b8", fontSize: 10 }} />
+                  <YAxis tick={{ fill: "#94a3b8", fontSize: 10 }} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #334155", borderRadius: "8px", fontSize: 12 }}
+                    contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #334155", borderRadius: "8px", fontSize: 11 }}
                     labelStyle={{ color: "#e2e8f0" }}
                   />
-                  <Legend wrapperStyle={{ fontSize: 12, paddingTop: "15px" }} />
+                  <Legend wrapperStyle={{ fontSize: 11, paddingTop: "10px" }} />
                   {selectedTeamNames.map((name, i) => (
                     <Bar key={name} dataKey={name} fill={teamColors[i % teamColors.length]} radius={[4, 4, 0, 0]} />
                   ))}
@@ -242,17 +242,17 @@ export default function ChartsPage() {
                     const sprintData = filteredBurndown.filter((d) => d.sprint === sprintName);
                     return (
                       <div key={sprintName}>
-                        <p className="text-xs text-muted-foreground mb-2">{sprintName}</p>
-                        <ResponsiveContainer width="100%" height={180}>
+                        <p className="text-[10px] md:text-xs text-muted-foreground mb-2">{sprintName}</p>
+                        <ResponsiveContainer width="100%" height={160}>
                           <LineChart data={sprintData}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
                             <XAxis dataKey="day" tick={{ fill: "#94a3b8", fontSize: 9 }} />
-                            <YAxis label={{ value: "Work Remaining", angle: -90, position: "insideLeft", fill: "#94a3b8", fontSize: 10 }} tick={{ fill: "#94a3b8", fontSize: 9 }} />
+                            <YAxis label={{ value: "Work Remaining", angle: -90, position: "insideLeft", fill: "#94a3b8", fontSize: 9 }} tick={{ fill: "#94a3b8", fontSize: 9 }} />
                             <Tooltip
-                              contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #334155", borderRadius: "8px", fontSize: 11 }}
+                              contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #334155", borderRadius: "8px", fontSize: 10 }}
                               labelStyle={{ color: "#e2e8f0" }}
                             />
-                            <Legend wrapperStyle={{ fontSize: 11, paddingTop: "10px" }} />
+                            <Legend wrapperStyle={{ fontSize: 10, paddingTop: "8px" }} />
                             <Line type="monotone" dataKey="ideal" stroke="#22d3ee" strokeWidth={2} strokeDasharray="5 5" name="Ideal" dot={false} />
                             <Line type="monotone" dataKey="estimated" stroke="#3b82f6" strokeWidth={2} name="Estimated" dot={false} />
                             <Line type="monotone" dataKey="actual" stroke="#f97316" strokeWidth={2.5} name="Actual" dot={false} />
@@ -263,16 +263,16 @@ export default function ChartsPage() {
                   })}
                 </div>
               ) : (
-                <ResponsiveContainer width="100%" height={350}>
+                <ResponsiveContainer width="100%" height={280}>
                   <LineChart data={filteredBurndown}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                    <XAxis dataKey="day" tick={{ fill: "#94a3b8", fontSize: 11 }} label={{ value: "Date", position: "insideBottom", offset: -5, fill: "#94a3b8", fontSize: 11 }} />
-                    <YAxis label={{ value: "Work Remaining", angle: -90, position: "insideLeft", fill: "#94a3b8", fontSize: 11 }} tick={{ fill: "#94a3b8", fontSize: 11 }} />
+                    <XAxis dataKey="day" tick={{ fill: "#94a3b8", fontSize: 10 }} label={{ value: "Date", position: "insideBottom", offset: -5, fill: "#94a3b8", fontSize: 10 }} />
+                    <YAxis label={{ value: "Work Remaining", angle: -90, position: "insideLeft", fill: "#94a3b8", fontSize: 10 }} tick={{ fill: "#94a3b8", fontSize: 10 }} />
                     <Tooltip
-                      contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #334155", borderRadius: "8px", fontSize: 12 }}
+                      contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #334155", borderRadius: "8px", fontSize: 11 }}
                       labelStyle={{ color: "#e2e8f0" }}
                     />
-                    <Legend wrapperStyle={{ fontSize: 12, paddingTop: "15px" }} />
+                    <Legend wrapperStyle={{ fontSize: 11, paddingTop: "10px" }} />
                     <Line type="monotone" dataKey="ideal" stroke="#22d3ee" strokeWidth={2} strokeDasharray="5 5" name="Ideal" dot={false} />
                     <Line type="monotone" dataKey="estimated" stroke="#3b82f6" strokeWidth={2} name="Estimated" dot={false} />
                     <Line type="monotone" dataKey="actual" stroke="#f97316" strokeWidth={2.5} name="Actual" dot={false} />
@@ -289,17 +289,17 @@ export default function ChartsPage() {
                     const sprintData = filteredBurnup.filter((d) => d.sprint === sprintName);
                     return (
                       <div key={sprintName}>
-                        <p className="text-xs text-muted-foreground mb-2">{sprintName}</p>
-                        <ResponsiveContainer width="100%" height={180}>
+                        <p className="text-[10px] md:text-xs text-muted-foreground mb-2">{sprintName}</p>
+                        <ResponsiveContainer width="100%" height={160}>
                           <LineChart data={sprintData}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
                             <XAxis dataKey="day" tick={{ fill: "#94a3b8", fontSize: 9 }} />
-                            <YAxis label={{ value: "Story Points", angle: -90, position: "insideLeft", fill: "#94a3b8", fontSize: 10 }} tick={{ fill: "#94a3b8", fontSize: 9 }} />
+                            <YAxis label={{ value: "Story Points", angle: -90, position: "insideLeft", fill: "#94a3b8", fontSize: 9 }} tick={{ fill: "#94a3b8", fontSize: 9 }} />
                             <Tooltip
-                              contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #334155", borderRadius: "8px", fontSize: 11 }}
+                              contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #334155", borderRadius: "8px", fontSize: 10 }}
                               labelStyle={{ color: "#e2e8f0" }}
                             />
-                            <Legend wrapperStyle={{ fontSize: 11, paddingTop: "10px" }} />
+                            <Legend wrapperStyle={{ fontSize: 10, paddingTop: "8px" }} />
                             <Line type="monotone" dataKey="scope" stroke="#eab308" strokeWidth={2} name="Scope" dot={false} />
                             <Line type="monotone" dataKey="done" stroke="#22c55e" strokeWidth={2} name="Done" dot={false} />
                             <Line type="monotone" dataKey="todo" stroke="#ef4444" strokeWidth={2} name="To Do" dot={false} />
@@ -310,16 +310,16 @@ export default function ChartsPage() {
                   })}
                 </div>
               ) : (
-                <ResponsiveContainer width="100%" height={350}>
+                <ResponsiveContainer width="100%" height={280}>
                   <LineChart data={filteredBurnup}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                    <XAxis dataKey="day" tick={{ fill: "#94a3b8", fontSize: 11 }} label={{ value: "Date", position: "insideBottom", offset: -5, fill: "#94a3b8", fontSize: 11 }} />
-                    <YAxis label={{ value: "Story Points", angle: -90, position: "insideLeft", fill: "#94a3b8", fontSize: 11 }} tick={{ fill: "#94a3b8", fontSize: 11 }} />
+                    <XAxis dataKey="day" tick={{ fill: "#94a3b8", fontSize: 10 }} label={{ value: "Date", position: "insideBottom", offset: -5, fill: "#94a3b8", fontSize: 10 }} />
+                    <YAxis label={{ value: "Story Points", angle: -90, position: "insideLeft", fill: "#94a3b8", fontSize: 10 }} tick={{ fill: "#94a3b8", fontSize: 10 }} />
                     <Tooltip
-                      contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #334155", borderRadius: "8px", fontSize: 12 }}
+                      contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #334155", borderRadius: "8px", fontSize: 11 }}
                       labelStyle={{ color: "#e2e8f0" }}
                     />
-                    <Legend wrapperStyle={{ fontSize: 12, paddingTop: "15px" }} />
+                    <Legend wrapperStyle={{ fontSize: 11, paddingTop: "10px" }} />
                     <Line type="monotone" dataKey="scope" stroke="#eab308" strokeWidth={2.5} name="Scope" dot={false} />
                     <Line type="monotone" dataKey="done" stroke="#22c55e" strokeWidth={2.5} name="Done" dot={false} />
                     <Line type="monotone" dataKey="todo" stroke="#ef4444" strokeWidth={2} name="To Do" dot={false} />
@@ -330,16 +330,16 @@ export default function ChartsPage() {
 
             {/* Cumulative Flow */}
             {activeChart === "cumulative" && (
-              <ResponsiveContainer width="100%" height={350}>
+              <ResponsiveContainer width="100%" height={280}>
                 <AreaChart data={data.charts.cumulativeFlow}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                  <XAxis dataKey="day" tick={{ fill: "#94a3b8", fontSize: 11 }} />
-                  <YAxis tick={{ fill: "#94a3b8", fontSize: 11 }} />
+                  <XAxis dataKey="day" tick={{ fill: "#94a3b8", fontSize: 10 }} />
+                  <YAxis tick={{ fill: "#94a3b8", fontSize: 10 }} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #334155", borderRadius: "8px", fontSize: 12 }}
+                    contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #334155", borderRadius: "8px", fontSize: 11 }}
                     labelStyle={{ color: "#e2e8f0" }}
                   />
-                  <Legend wrapperStyle={{ fontSize: 12, paddingTop: "15px" }} />
+                  <Legend wrapperStyle={{ fontSize: 11, paddingTop: "10px" }} />
                   <Area type="monotone" dataKey="Done" stackId="1" stroke="#22c55e" fill="#22c55e33" />
                   <Area type="monotone" dataKey="InProgress" stackId="1" stroke="#f97316" fill="#f9731633" />
                   <Area type="monotone" dataKey="Todo" stackId="1" stroke="#6b7280" fill="#6b728033" />
@@ -349,17 +349,17 @@ export default function ChartsPage() {
 
             {/* Predictability */}
             {activeChart === "predictability" && (
-              <ResponsiveContainer width="100%" height={350}>
+              <ResponsiveContainer width="100%" height={280}>
                 <BarChart data={filteredPredictability}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                  <XAxis dataKey="pi" tick={{ fill: "#94a3b8", fontSize: 11 }} />
-                  <YAxis domain={[0, 120]} tick={{ fill: "#94a3b8", fontSize: 11 }} />
+                  <XAxis dataKey="pi" tick={{ fill: "#94a3b8", fontSize: 10 }} />
+                  <YAxis domain={[0, 120]} tick={{ fill: "#94a3b8", fontSize: 10 }} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #334155", borderRadius: "8px", fontSize: 12 }}
+                    contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #334155", borderRadius: "8px", fontSize: 11 }}
                     labelStyle={{ color: "#e2e8f0" }}
                     formatter={(value: number) => [`${value}%`, ""]}
                   />
-                  <Legend wrapperStyle={{ fontSize: 12, paddingTop: "15px" }} />
+                  <Legend wrapperStyle={{ fontSize: 11, paddingTop: "10px" }} />
                   {selectedTeamNames.map((name, i) => (
                     <Bar key={name} dataKey={name} fill={teamColors[i % teamColors.length]} radius={[4, 4, 0, 0]} />
                   ))}

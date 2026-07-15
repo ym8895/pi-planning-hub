@@ -45,114 +45,116 @@ export default function DependenciesPage() {
     <AppShell>
       <div className="space-y-6">
         <div>
-          <a href="/dashboard" className="text-xs text-muted-foreground hover:text-foreground transition-colors">&larr; Back to Dashboard</a>
-          <h1 className="text-2xl font-bold">Cross-Team Dependencies</h1>
-          <p className="text-muted-foreground mt-1">Track and manage dependencies between teams</p>
+          <a href="/dashboard" className="text-[10px] md:text-xs text-muted-foreground hover:text-foreground transition-colors">&larr; Back to Dashboard</a>
+          <h1 className="text-lg md:text-2xl font-bold">Cross-Team Dependencies</h1>
+          <p className="text-xs md:text-sm text-muted-foreground mt-1">Track and manage dependencies between teams</p>
         </div>
 
         {/* Stats */}
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 md:gap-4 md:grid-cols-4">
           <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Total</p>
-              <p className="text-2xl font-bold">{deps.length}</p>
+            <CardContent className="p-2 md:p-4">
+              <p className="text-[10px] md:text-sm text-muted-foreground">Total</p>
+              <p className="text-lg md:text-2xl font-bold">{deps.length}</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Open</p>
-              <p className="text-2xl font-bold text-amber-500">{open.length}</p>
+            <CardContent className="p-2 md:p-4">
+              <p className="text-[10px] md:text-sm text-muted-foreground">Open</p>
+              <p className="text-lg md:text-2xl font-bold text-amber-500">{open.length}</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Resolved</p>
-              <p className="text-2xl font-bold text-emerald-500">{resolved.length}</p>
+            <CardContent className="p-2 md:p-4">
+              <p className="text-[10px] md:text-sm text-muted-foreground">Resolved</p>
+              <p className="text-lg md:text-2xl font-bold text-emerald-500">{resolved.length}</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Blocked</p>
-              <p className="text-2xl font-bold text-red-500">{blocked.length}</p>
+            <CardContent className="p-2 md:p-4">
+              <p className="text-[10px] md:text-sm text-muted-foreground">Blocked</p>
+              <p className="text-lg md:text-2xl font-bold text-red-500">{blocked.length}</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Dependencies Table */}
         <Card>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>From</TableHead>
-                <TableHead className="w-10"></TableHead>
-                <TableHead>To</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Description</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                    Loading dependencies...
-                  </TableCell>
+                  <TableHead className="text-[10px] md:text-xs">From</TableHead>
+                  <TableHead className="w-8 md:w-10"></TableHead>
+                  <TableHead className="text-[10px] md:text-xs">To</TableHead>
+                  <TableHead className="text-[10px] md:text-xs hidden md:table-cell">Type</TableHead>
+                  <TableHead className="text-[10px] md:text-xs">Status</TableHead>
+                  <TableHead className="text-[10px] md:text-xs hidden md:table-cell">Description</TableHead>
                 </TableRow>
-              ) : deps.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                    No dependencies found
-                  </TableCell>
-                </TableRow>
-              ) : (
-                deps.map((dep) => {
-                  const sc = statusConfig[dep.status] ?? statusConfig.OPEN;
-                  const Icon = sc.icon;
-                  return (
-                    <TableRow key={dep.id}>
-                      <TableCell>
-                        <div>
-                          <p className="font-medium">
-                            {dep.fromStory?.team?.name ?? dep.fromFeature?.name ?? "—"}
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-4 md:py-8 text-[10px] md:text-xs text-muted-foreground">
+                      Loading dependencies...
+                    </TableCell>
+                  </TableRow>
+                ) : deps.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-4 md:py-8 text-[10px] md:text-xs text-muted-foreground">
+                      No dependencies found
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  deps.map((dep) => {
+                    const sc = statusConfig[dep.status] ?? statusConfig.OPEN;
+                    const Icon = sc.icon;
+                    return (
+                      <TableRow key={dep.id}>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium text-[10px] md:text-sm">
+                              {dep.fromStory?.team?.name ?? dep.fromFeature?.name ?? "—"}
+                            </p>
+                            <p className="text-[9px] md:text-xs text-muted-foreground">
+                              {dep.fromStory?.name ?? dep.fromFeature?.name}
+                            </p>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <ArrowRight className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium text-[10px] md:text-sm">
+                              {dep.toStory?.team?.name ?? dep.toFeature?.name ?? "—"}
+                            </p>
+                            <p className="text-[9px] md:text-xs text-muted-foreground">
+                              {dep.toStory?.name ?? dep.toFeature?.name}
+                            </p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell">
+                          <Badge variant="outline" className="text-[9px] md:text-[10px]">{dep.type.replace("_", " ")}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={cn("gap-1 text-[8px] md:text-[10px]", sc.color)}>
+                            <Icon className="h-2.5 w-2.5 md:h-3 md:w-3" />
+                            {dep.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell">
+                          <p className="text-[10px] md:text-sm text-muted-foreground line-clamp-2">
+                            {dep.description ?? "—"}
                           </p>
-                          <p className="text-xs text-muted-foreground">
-                            {dep.fromStory?.name ?? dep.fromFeature?.name}
-                          </p>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <p className="font-medium">
-                            {dep.toStory?.team?.name ?? dep.toFeature?.name ?? "—"}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {dep.toStory?.name ?? dep.toFeature?.name}
-                          </p>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{dep.type.replace("_", " ")}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={cn("gap-1", sc.color)}>
-                          <Icon className="h-3 w-3" />
-                          {dep.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <p className="text-sm text-muted-foreground line-clamp-2">
-                          {dep.description ?? "—"}
-                        </p>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              )}
-            </TableBody>
-          </Table>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </Card>
       </div>
     </AppShell>

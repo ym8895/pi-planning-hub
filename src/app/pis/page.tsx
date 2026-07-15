@@ -95,16 +95,17 @@ export default function PIManagementPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">PI Management</h1>
-            <p className="text-muted-foreground">Create and manage Program Increments</p>
+            <a href="/dashboard" className="text-[10px] md:text-xs text-muted-foreground hover:text-foreground transition-colors">&larr; Back to Dashboard</a>
+            <h1 className="text-lg md:text-2xl font-bold">PI Management</h1>
+            <p className="text-xs md:text-sm text-muted-foreground">Create and manage Program Increments</p>
           </div>
-          <Button className="gap-2" onClick={() => setCreateOpen(true)}>
+          <Button className="h-7 md:h-8 text-[10px] md:text-xs gap-2" onClick={() => setCreateOpen(true)}>
             <Plus className="h-4 w-4" /> Create PI
           </Button>
         </div>
 
         {loading ? (
-          <div className="text-center py-12 text-muted-foreground">Loading PIs...</div>
+          <div className="text-center py-6 md:py-12 text-[10px] md:text-xs text-muted-foreground">Loading PIs...</div>
         ) : (
           <div className="space-y-4">
             {pis.map((pi) => {
@@ -114,53 +115,53 @@ export default function PIManagementPage() {
 
               return (
                 <Card key={pi.id} className={cn("overflow-hidden", pi.status === "EXECUTING" && "ring-1 ring-amber-500/30")}>
-                  <CardHeader className="pb-3">
+                  <CardHeader className="pb-2 md:pb-3">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className={cn("rounded-lg p-2", cfg.color)}>
-                          <Icon className="h-4 w-4" />
+                      <div className="flex items-center gap-2 md:gap-3">
+                        <div className={cn("rounded-lg p-1.5 md:p-2", cfg.color)}>
+                          <Icon className="h-3 w-3 md:h-4 md:w-4" />
                         </div>
                         <div>
-                          <CardTitle className="text-lg">{pi.name}</CardTitle>
-                          <div className="flex items-center gap-2 mt-0.5">
-                            <Badge className={cn("text-[10px]", cfg.color)}>{cfg.label}</Badge>
-                            <span className="text-xs text-muted-foreground">
+                          <CardTitle className="text-sm md:text-lg">{pi.name}</CardTitle>
+                          <div className="flex items-center gap-1.5 md:gap-2 mt-0.5">
+                            <Badge className={cn("text-[9px] md:text-[10px]", cfg.color)}>{cfg.label}</Badge>
+                            <span className="text-[9px] md:text-xs text-muted-foreground">
                               {formatDate(pi.startDate)} — {formatDate(pi.endDate)}
                             </span>
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 md:gap-2">
                         {pi.status === "PLANNING" && (
                           <Button
                             size="sm"
                             variant="outline"
-                            className="gap-1"
+                            className="h-6 md:h-7 text-[9px] md:text-[10px] gap-1"
                             onClick={() => handleStatusChange(pi.id, "EXECUTING")}
                           >
-                            <Play className="h-3.5 w-3.5" /> Start PI
+                            <Play className="h-3 w-3 md:h-3.5 md:w-3.5" /> Start PI
                           </Button>
                         )}
                         {pi.status === "EXECUTING" && (
                           <Button
                             size="sm"
                             variant="outline"
-                            className="gap-1"
+                            className="h-6 md:h-7 text-[9px] md:text-[10px] gap-1"
                             onClick={() => handleStatusChange(pi.id, "COMPLETED")}
                           >
-                            <CheckCircle2 className="h-3.5 w-3.5" /> Complete PI
+                            <CheckCircle2 className="h-3 w-3 md:h-3.5 md:w-3.5" /> Complete PI
                           </Button>
                         )}
                         {pi.status === "COMPLETED" && (
-                          <Badge variant="outline" className="text-xs gap-1">
-                            <Archive className="h-3 w-3" /> Archived
+                          <Badge variant="outline" className="text-[9px] md:text-xs gap-1">
+                            <Archive className="h-2.5 w-2.5 md:h-3 md:w-3" /> Archived
                           </Badge>
                         )}
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-5 gap-3 text-sm">
+                  <CardContent className="space-y-3 md:space-y-4 p-2 md:p-4">
+                    <div className="grid grid-cols-5 gap-1.5 md:gap-3 text-[10px] md:text-sm">
                       <div>
                         <p className="text-muted-foreground">Features</p>
                         <p className="font-bold">{pi.stats.features}</p>
@@ -185,19 +186,19 @@ export default function PIManagementPage() {
 
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs text-muted-foreground">Story Completion</span>
-                        <span className="text-xs font-medium">{Math.round(progress)}%</span>
+                        <span className="text-[9px] md:text-xs text-muted-foreground">Story Completion</span>
+                        <span className="text-[9px] md:text-xs font-medium">{Math.round(progress)}%</span>
                       </div>
-                      <Progress value={progress} />
+                      <Progress value={progress} className="h-1.5 md:h-2" />
                     </div>
 
                     <div>
-                      <p className="text-xs text-muted-foreground mb-2">Sprints ({pi.iterations.length})</p>
-                      <div className="flex flex-wrap gap-1.5">
+                      <p className="text-[9px] md:text-xs text-muted-foreground mb-1.5 md:mb-2">Sprints ({pi.iterations.length})</p>
+                      <div className="flex flex-wrap gap-1 md:gap-1.5">
                         {pi.iterations.map(it => (
-                          <Badge key={it.id} variant="outline" className="text-[10px]">
+                          <Badge key={it.id} variant="outline" className="text-[8px] md:text-[10px]">
                             {it.name}
-                            <span className="text-muted-foreground ml-1">{it.kind === "IP" ? "IP" : ""}</span>
+                            <span className="text-muted-foreground ml-0.5 md:ml-1">{it.kind === "IP" ? "IP" : ""}</span>
                           </Badge>
                         ))}
                       </div>
@@ -212,45 +213,48 @@ export default function PIManagementPage() {
         <Dialog open={createOpen} onOpenChange={(v) => !v && setCreateOpen(false)}>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>Create New PI</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-sm md:text-base">Create New PI</DialogTitle>
+              <DialogDescription className="text-[10px] md:text-xs">
                 Create a new Program Increment with 5 sprints + IP sprint.
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>PI Name *</Label>
+            <div className="space-y-3 md:space-y-4">
+              <div className="space-y-1.5 md:space-y-2">
+                <Label className="text-[10px] md:text-xs">PI Name *</Label>
                 <Input
                   placeholder="PI 2026.3"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
+                  className="h-7 md:h-8 text-[10px] md:text-xs"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label>Start Date *</Label>
+              <div className="grid grid-cols-2 gap-2 md:gap-3">
+                <div className="space-y-1.5 md:space-y-2">
+                  <Label className="text-[10px] md:text-xs">Start Date *</Label>
                   <Input
                     type="date"
                     value={newStart}
                     onChange={(e) => setNewStart(e.target.value)}
+                    className="h-7 md:h-8 text-[10px] md:text-xs"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label>End Date *</Label>
+                <div className="space-y-1.5 md:space-y-2">
+                  <Label className="text-[10px] md:text-xs">End Date *</Label>
                   <Input
                     type="date"
                     value={newEnd}
                     onChange={(e) => setNewEnd(e.target.value)}
+                    className="h-7 md:h-8 text-[10px] md:text-xs"
                   />
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-[9px] md:text-xs text-muted-foreground">
                 6 iterations (5 sprints + IP) will be auto-created, each 2 weeks.
               </p>
             </div>
             <DialogFooter className="gap-2">
-              <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
-              <Button onClick={handleCreate} disabled={creating || !newName || !newStart || !newEnd}>
+              <Button variant="outline" onClick={() => setCreateOpen(false)} className="h-7 md:h-8 text-[10px] md:text-xs">Cancel</Button>
+              <Button onClick={handleCreate} disabled={creating || !newName || !newStart || !newEnd} className="h-7 md:h-8 text-[10px] md:text-xs">
                 {creating ? "Creating..." : "Create PI"}
               </Button>
             </DialogFooter>

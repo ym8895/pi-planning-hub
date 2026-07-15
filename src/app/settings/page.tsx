@@ -79,29 +79,30 @@ export default function SettingsPage() {
     <AppShell>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold">Settings</h1>
-          <p className="text-muted-foreground mt-1">PI Planning Hub configuration</p>
+          <a href="/dashboard" className="text-[10px] md:text-xs text-muted-foreground hover:text-foreground transition-colors">&larr; Back to Dashboard</a>
+          <h1 className="text-lg md:text-2xl font-bold">Settings</h1>
+          <p className="text-xs md:text-sm text-muted-foreground mt-1">PI Planning Hub configuration</p>
         </div>
 
         {/* Sections Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-3 md:gap-4 md:grid-cols-2 lg:grid-cols-3">
           {sections.map((section) => {
             const Icon = section.icon;
             return (
               <Card key={section.title}>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-sm">
-                    <Icon className="h-4 w-4 text-muted-foreground" />
+                <CardHeader className="pb-2 md:pb-3">
+                  <CardTitle className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm">
+                    <Icon className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground" />
                     {section.title}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="space-y-2 md:space-y-3 p-2 md:p-4">
                   {section.items.map((item) => (
-                    <div key={item.label} className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">{item.label}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium">{item.value}</span>
-                        <Badge className={cn("text-[9px]", statusColors[item.status])}>
+                    <div key={item.label} className="flex items-center justify-between gap-2">
+                      <span className="text-[9px] md:text-xs text-muted-foreground truncate">{item.label}</span>
+                      <div className="flex items-center gap-1 md:gap-2 shrink-0">
+                        <span className="text-[9px] md:text-xs font-medium truncate">{item.value}</span>
+                        <Badge className={cn("text-[8px] md:text-[9px] shrink-0", statusColors[item.status])}>
                           {item.status}
                         </Badge>
                       </div>
@@ -115,16 +116,16 @@ export default function SettingsPage() {
 
         {/* Export */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">Data Export</CardTitle>
+          <CardHeader className="pb-2 md:pb-3">
+            <CardTitle className="text-xs md:text-sm">Data Export</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-4">
-              <p className="text-xs text-muted-foreground flex-1">
+          <CardContent className="p-2 md:p-4">
+            <div className="flex items-center gap-2 md:gap-4">
+              <p className="text-[9px] md:text-xs text-muted-foreground flex-1">
                 Export PI planning data for offline analysis or archival.
               </p>
-              <button className="flex items-center gap-2 rounded-lg bg-zinc-800 px-4 py-2 text-xs font-medium hover:bg-zinc-700 transition-colors">
-                <Download className="h-3.5 w-3.5" />
+              <button className="flex items-center gap-1.5 md:gap-2 rounded-lg bg-zinc-800 px-2 py-1.5 md:px-4 md:py-2 text-[9px] md:text-xs font-medium hover:bg-zinc-700 transition-colors shrink-0">
+                <Download className="h-3 w-3 md:h-3.5 md:w-3.5" />
                 Export PI Data
               </button>
             </div>
@@ -133,8 +134,8 @@ export default function SettingsPage() {
 
         {/* App Info */}
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <CardContent className="p-2 md:p-4">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-1 md:gap-0 text-[8px] md:text-xs text-muted-foreground">
               <span>PI Planning Hub v1.0.0</span>
               <span>Built with Next.js + Prisma + SQLite</span>
               <span>Demo: SAFe PI Planning Platform</span>

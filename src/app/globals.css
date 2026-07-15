@@ -174,3 +174,22 @@
     fill: black !important;
   }
 }
+
+/* Mobile touch-friendly styles */
+@media (max-width: 767px) {
+  /* Better touch targets */
+  button, a, [role="button"] {
+    min-height: 32px;
+  }
+
+  /* Smoother scrolling */
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Better card spacing on mobile */
+  .space-y-3 > * + *,
+  .space-y-4 > * + * {
+    margin-top: 0.625rem;
+  }
+}

@@ -49,132 +49,135 @@ export default function ObjectivesPage() {
     <AppShell>
       <div className="space-y-6">
         <div>
-          <a href="/dashboard" className="text-xs text-muted-foreground hover:text-foreground transition-colors">&larr; Back to Dashboard</a>
-          <h1 className="text-2xl font-bold">PI Objectives</h1>
-          <p className="text-muted-foreground">{data?.pi?.name ?? "No PI"} — Committed & Stretch goals</p>
+          <a href="/dashboard" className="text-[10px] md:text-xs text-muted-foreground hover:text-foreground transition-colors">&larr; Back to Dashboard</a>
+          <h1 className="text-lg md:text-2xl font-bold">PI Objectives</h1>
+          <p className="text-xs md:text-sm text-muted-foreground">{data?.pi?.name ?? "No PI"} — Committed & Stretch goals</p>
         </div>
 
         {/* Stats */}
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 md:gap-4 md:grid-cols-4">
           <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Total Objectives</p>
-              <p className="text-2xl font-bold">{objectives.length}</p>
+            <CardContent className="p-2 md:p-4">
+              <p className="text-[10px] md:text-sm text-muted-foreground">Total Objectives</p>
+              <p className="text-lg md:text-2xl font-bold">{objectives.length}</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Committed</p>
-              <p className="text-2xl font-bold">{committed.length}</p>
+            <CardContent className="p-2 md:p-4">
+              <p className="text-[10px] md:text-sm text-muted-foreground">Committed</p>
+              <p className="text-lg md:text-2xl font-bold">{committed.length}</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Stretch</p>
-              <p className="text-2xl font-bold">{stretch.length}</p>
+            <CardContent className="p-2 md:p-4">
+              <p className="text-[10px] md:text-sm text-muted-foreground">Stretch</p>
+              <p className="text-lg md:text-2xl font-bold">{stretch.length}</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Total Business Value</p>
-              <p className="text-2xl font-bold">{totalBV}</p>
+            <CardContent className="p-2 md:p-4">
+              <p className="text-[10px] md:text-sm text-muted-foreground">Total Business Value</p>
+              <p className="text-lg md:text-2xl font-bold">{totalBV}</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Overall Progress */}
         <Card>
-          <CardHeader>
-            <CardTitle>Overall PI Completion</CardTitle>
+          <CardHeader className="pb-2 md:pb-3">
+            <CardTitle className="text-xs md:text-sm">Overall PI Completion</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-4">
-              <Progress value={avgCompletion} className="flex-1" />
-              <span className="text-2xl font-bold">{Math.round(avgCompletion)}%</span>
+          <CardContent className="p-2 md:p-4">
+            <div className="flex items-center gap-2 md:gap-4">
+              <Progress value={avgCompletion} className="flex-1 h-2 md:h-3" />
+              <span className="text-lg md:text-2xl font-bold">{Math.round(avgCompletion)}%</span>
             </div>
           </CardContent>
         </Card>
 
         {/* Objectives Table */}
         <Card>
-          <CardHeader>
-            <CardTitle>Objectives</CardTitle>
+          <CardHeader className="pb-2 md:pb-3">
+            <CardTitle className="text-xs md:text-sm">Objectives</CardTitle>
           </CardHeader>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Objective</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead className="text-right">Business Value</TableHead>
-                <TableHead className="text-right">Actual Value</TableHead>
-                <TableHead className="w-48">Completion</TableHead>
-                <TableHead className="text-right">Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                    Loading objectives...
-                  </TableCell>
+                  <TableHead className="text-[10px] md:text-xs">Objective</TableHead>
+                  <TableHead className="text-[10px] md:text-xs hidden md:table-cell">Type</TableHead>
+                  <TableHead className="text-[10px] md:text-xs text-right hidden md:table-cell">Business Value</TableHead>
+                  <TableHead className="text-[10px] md:text-xs text-right hidden md:table-cell">Actual Value</TableHead>
+                  <TableHead className="text-[10px] md:text-xs w-24 md:w-48">Completion</TableHead>
+                  <TableHead className="text-[10px] md:text-xs text-right">Status</TableHead>
                 </TableRow>
-              ) : objectives.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                    No objectives found
-                  </TableCell>
-                </TableRow>
-              ) : (
-                objectives.map((o) => (
-                  <TableRow key={o.id}>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{o.title}</p>
-                        {o.description && (
-                          <p className="text-xs text-muted-foreground line-clamp-1">
-                            {o.description}
-                          </p>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={o.kind === "COMMITTED" ? "default" : "warning"}>
-                        {o.kind === "COMMITTED" ? (
-                          <Star className="h-3 w-3 mr-1" />
-                        ) : (
-                          <Trophy className="h-3 w-3 mr-1" />
-                        )}
-                        {o.kind}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right font-medium">{o.businessValue}</TableCell>
-                    <TableCell className="text-right">{o.actualValue || "—"}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Progress value={o.completion} className="flex-1" />
-                        <span className="text-sm font-medium w-10 text-right">
-                          {Math.round(o.completion)}%
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Badge
-                        className={cn(
-                          o.completion >= 80
-                            ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"
-                            : o.completion >= 40
-                            ? "bg-amber-500/15 text-amber-700 dark:text-amber-400"
-                            : "bg-red-500/15 text-red-700 dark:text-red-400"
-                        )}
-                      >
-                        {o.completion >= 80 ? "On Track" : o.completion >= 40 ? "At Risk" : "Behind"}
-                      </Badge>
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-4 md:py-8 text-[10px] md:text-xs text-muted-foreground">
+                      Loading objectives...
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                ) : objectives.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-4 md:py-8 text-[10px] md:text-xs text-muted-foreground">
+                      No objectives found
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  objectives.map((o) => (
+                    <TableRow key={o.id}>
+                      <TableCell>
+                        <div>
+                          <p className="font-medium text-[10px] md:text-sm">{o.title}</p>
+                          {o.description && (
+                            <p className="text-[9px] md:text-xs text-muted-foreground line-clamp-1 hidden md:block">
+                              {o.description}
+                            </p>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <Badge variant={o.kind === "COMMITTED" ? "default" : "warning"} className="text-[9px] md:text-[10px]">
+                          {o.kind === "COMMITTED" ? (
+                            <Star className="h-3 w-3 mr-1" />
+                          ) : (
+                            <Trophy className="h-3 w-3 mr-1" />
+                          )}
+                          {o.kind}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right font-medium text-[10px] md:text-sm hidden md:table-cell">{o.businessValue}</TableCell>
+                      <TableCell className="text-right text-[10px] md:text-sm hidden md:table-cell">{o.actualValue || "—"}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1 md:gap-2">
+                          <Progress value={o.completion} className="flex-1 h-1.5 md:h-3" />
+                          <span className="text-[10px] md:text-sm font-medium w-8 md:w-10 text-right">
+                            {Math.round(o.completion)}%
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Badge
+                          className={cn(
+                            "text-[8px] md:text-[10px]",
+                            o.completion >= 80
+                              ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"
+                              : o.completion >= 40
+                              ? "bg-amber-500/15 text-amber-700 dark:text-amber-400"
+                              : "bg-red-500/15 text-red-700 dark:text-red-400"
+                          )}
+                        >
+                          {o.completion >= 80 ? "On Track" : o.completion >= 40 ? "At Risk" : "Behind"}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </Card>
       </div>
     </AppShell>

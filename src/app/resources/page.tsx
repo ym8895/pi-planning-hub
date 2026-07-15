@@ -134,125 +134,129 @@ export default function ResourcesPage() {
     <AppShell>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold">Resources</h1>
-          <p className="text-muted-foreground">Architecture documentation, workflow guides, and technology choices</p>
+          <a href="/dashboard" className="text-[10px] md:text-xs text-muted-foreground hover:text-foreground transition-colors">&larr; Back to Dashboard</a>
+          <h1 className="text-lg md:text-2xl font-bold">Resources</h1>
+          <p className="text-xs md:text-sm text-muted-foreground">Architecture documentation, workflow guides, and technology choices</p>
         </div>
 
         <Tabs defaultValue="architecture" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="architecture" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              Architecture
+          <TabsList className="grid w-full grid-cols-4 h-8 md:h-10">
+            <TabsTrigger value="architecture" className="flex items-center gap-1 md:gap-2 text-[8px] md:text-xs">
+              <FileText className="h-3 w-3 md:h-4 md:w-4" />
+              <span className="hidden md:inline">Architecture</span>
+              <span className="md:hidden">Arch</span>
             </TabsTrigger>
-            <TabsTrigger value="workflow" className="flex items-center gap-2">
-              <Workflow className="h-4 w-4" />
-              Workflow
+            <TabsTrigger value="workflow" className="flex items-center gap-1 md:gap-2 text-[8px] md:text-xs">
+              <Workflow className="h-3 w-3 md:h-4 md:w-4" />
+              <span className="hidden md:inline">Workflow</span>
+              <span className="md:hidden">Work</span>
             </TabsTrigger>
-            <TabsTrigger value="technology" className="flex items-center gap-2">
-              <Cpu className="h-4 w-4" />
-              Technology
+            <TabsTrigger value="technology" className="flex items-center gap-1 md:gap-2 text-[8px] md:text-xs">
+              <Cpu className="h-3 w-3 md:h-4 md:w-4" />
+              <span className="hidden md:inline">Technology</span>
+              <span className="md:hidden">Tech</span>
             </TabsTrigger>
-            <TabsTrigger value="roles" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
+            <TabsTrigger value="roles" className="flex items-center gap-1 md:gap-2 text-[8px] md:text-xs">
+              <Users className="h-3 w-3 md:h-4 md:w-4" />
               Roles
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="architecture" className="mt-4">
+          <TabsContent value="architecture" className="mt-2 md:mt-4">
             <Card>
-              <CardHeader>
+              <CardHeader className="pb-2 md:pb-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-indigo-400" />
-                    <CardTitle>Architecture Document</CardTitle>
+                  <div className="flex items-center gap-1.5 md:gap-2">
+                    <FileText className="h-4 w-4 md:h-5 md:w-5 text-indigo-400" />
+                    <CardTitle className="text-xs md:text-sm">Architecture Document</CardTitle>
                   </div>
                   <a
                     href="/docs/architecture.md"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    className="flex items-center gap-1 text-[9px] md:text-xs text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    <Download className="h-3 w-3" />
-                    Download
+                    <Download className="h-2.5 w-2.5 md:h-3 md:w-3" />
+                    <span className="hidden md:inline">Download</span>
                   </a>
                 </div>
               </CardHeader>
-              <CardContent className="prose prose-invert max-w-none">
+              <CardContent className="prose prose-invert max-w-none p-2 md:p-4">
                 {renderMarkdown(architecture)}
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="workflow" className="mt-4">
+          <TabsContent value="workflow" className="mt-2 md:mt-4">
             <Card>
-              <CardHeader>
+              <CardHeader className="pb-2 md:pb-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Workflow className="h-5 w-5 text-emerald-400" />
-                    <CardTitle>Workflow Guide</CardTitle>
+                  <div className="flex items-center gap-1.5 md:gap-2">
+                    <Workflow className="h-4 w-4 md:h-5 md:w-5 text-emerald-400" />
+                    <CardTitle className="text-xs md:text-sm">Workflow Guide</CardTitle>
                   </div>
                   <a
                     href="/docs/workflow.md"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    className="flex items-center gap-1 text-[9px] md:text-xs text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    <Download className="h-3 w-3" />
-                    Download
+                    <Download className="h-2.5 w-2.5 md:h-3 md:w-3" />
+                    <span className="hidden md:inline">Download</span>
                   </a>
                 </div>
               </CardHeader>
-              <CardContent className="prose prose-invert max-w-none">
+              <CardContent className="prose prose-invert max-w-none p-2 md:p-4">
                 {renderMarkdown(workflow)}
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="technology" className="mt-4">
+          <TabsContent value="technology" className="mt-2 md:mt-4">
             <Card>
-              <CardHeader>
+              <CardHeader className="pb-2 md:pb-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Cpu className="h-5 w-5 text-amber-400" />
-                    <CardTitle>Technology Choices</CardTitle>
+                  <div className="flex items-center gap-1.5 md:gap-2">
+                    <Cpu className="h-4 w-4 md:h-5 md:w-5 text-amber-400" />
+                    <CardTitle className="text-xs md:text-sm">Technology Choices</CardTitle>
                   </div>
                   <a
                     href="/docs/technology.md"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    className="flex items-center gap-1 text-[9px] md:text-xs text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    <Download className="h-3 w-3" />
-                    Download
+                    <Download className="h-2.5 w-2.5 md:h-3 md:w-3" />
+                    <span className="hidden md:inline">Download</span>
                   </a>
                 </div>
               </CardHeader>
-              <CardContent className="prose prose-invert max-w-none">
+              <CardContent className="prose prose-invert max-w-none p-2 md:p-4">
                 {renderMarkdown(technology)}
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="roles" className="mt-4">
+          <TabsContent value="roles" className="mt-2 md:mt-4">
             <Card>
-              <CardHeader>
+              <CardHeader className="pb-2 md:pb-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Users className="h-5 w-5 text-cyan-400" />
-                    <CardTitle>Role-Based Features Guide</CardTitle>
+                  <div className="flex items-center gap-1.5 md:gap-2">
+                    <Users className="h-4 w-4 md:h-5 md:w-5 text-cyan-400" />
+                    <CardTitle className="text-xs md:text-sm">Role-Based Features Guide</CardTitle>
                   </div>
                   <a
                     href="/docs/roles.md"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    className="flex items-center gap-1 text-[9px] md:text-xs text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    <Download className="h-3 w-3" />
-                    Download
+                    <Download className="h-2.5 w-2.5 md:h-3 md:w-3" />
+                    <span className="hidden md:inline">Download</span>
                   </a>
                 </div>
               </CardHeader>
-              <CardContent className="prose prose-invert max-w-none">
+              <CardContent className="prose prose-invert max-w-none p-2 md:p-4">
                 {renderMarkdown(roles)}
               </CardContent>
             </Card>

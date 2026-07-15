@@ -70,88 +70,88 @@ export default function RisksPage() {
     <AppShell>
       <div className="space-y-6">
         <div>
-          <a href="/dashboard" className="text-xs text-muted-foreground hover:text-foreground transition-colors">&larr; Back to Dashboard</a>
-          <h1 className="text-2xl font-bold">Risk Register</h1>
-          <p className="text-muted-foreground mt-1">ROAM classification for PI risks</p>
+          <a href="/dashboard" className="text-[10px] md:text-xs text-muted-foreground hover:text-foreground transition-colors">&larr; Back to Dashboard</a>
+          <h1 className="text-lg md:text-2xl font-bold">Risk Register</h1>
+          <p className="text-xs md:text-sm text-muted-foreground mt-1">ROAM classification for PI risks</p>
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-1.5 md:gap-3">
           <Card>
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold">{risks.length}</div>
-              <div className="text-xs text-muted-foreground">Total Risks</div>
+            <CardContent className="p-2 md:p-4 text-center">
+              <div className="text-lg md:text-2xl font-bold">{risks.length}</div>
+              <div className="text-[10px] md:text-xs text-muted-foreground">Total Risks</div>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-red-400">{openRisks.length}</div>
-              <div className="text-xs text-muted-foreground">Open (Unroamed)</div>
+            <CardContent className="p-2 md:p-4 text-center">
+              <div className="text-lg md:text-2xl font-bold text-red-400">{openRisks.length}</div>
+              <div className="text-[10px] md:text-xs text-muted-foreground">Open (Unroamed)</div>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-violet-400">{risks.filter(r => r.roam === "MITIGATED").length}</div>
-              <div className="text-xs text-muted-foreground">Mitigated</div>
+            <CardContent className="p-2 md:p-4 text-center">
+              <div className="text-lg md:text-2xl font-bold text-violet-400">{risks.filter(r => r.roam === "MITIGATED").length}</div>
+              <div className="text-[10px] md:text-xs text-muted-foreground">Mitigated</div>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-emerald-400">{risks.filter(r => r.roam === "RESOLVED").length}</div>
-              <div className="text-xs text-muted-foreground">Resolved</div>
+            <CardContent className="p-2 md:p-4 text-center">
+              <div className="text-lg md:text-2xl font-bold text-emerald-400">{risks.filter(r => r.roam === "RESOLVED").length}</div>
+              <div className="text-[10px] md:text-xs text-muted-foreground">Resolved</div>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-amber-400">{risks.filter(r => r.impact === "HIGH" || r.impact === "CRITICAL").length}</div>
-              <div className="text-xs text-muted-foreground">High/Critical</div>
+            <CardContent className="p-2 md:p-4 text-center">
+              <div className="text-lg md:text-2xl font-bold text-amber-400">{risks.filter(r => r.impact === "HIGH" || r.impact === "CRITICAL").length}</div>
+              <div className="text-[10px] md:text-xs text-muted-foreground">High/Critical</div>
             </CardContent>
           </Card>
         </div>
 
         {/* ROAM Board */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           {groupedRisks.map(({ roam, risks: roamRisks }) => {
             const config = roamConfig[roam];
             const Icon = config.icon;
             return (
               <Card key={roam}>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-sm">
-                    <Icon className={cn("h-4 w-4", config.color)} />
+                <CardHeader className="pb-2 md:pb-3">
+                  <CardTitle className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm">
+                    <Icon className={cn("h-3 w-3 md:h-4 md:w-4", config.color)} />
                     {config.label}
-                    <Badge variant="outline" className="ml-auto text-[10px]">{roamRisks.length}</Badge>
+                    <Badge variant="outline" className="ml-auto text-[9px] md:text-[10px]">{roamRisks.length}</Badge>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent className="space-y-1.5 md:space-y-2 p-2 md:p-4">
                   {roamRisks.length === 0 && (
-                    <p className="text-xs text-muted-foreground text-center py-4">No risks</p>
+                    <p className="text-[10px] md:text-xs text-muted-foreground text-center py-2 md:py-4">No risks</p>
                   )}
                   {roamRisks.map(risk => (
-                    <div key={risk.id} className={cn("rounded-lg border p-3 space-y-2", config.bgColor)}>
-                      <div className="flex items-start justify-between gap-2">
-                        <p className="text-sm font-medium leading-tight">{risk.title}</p>
-                        <Badge className={cn("text-[9px] shrink-0", impactColors[risk.impact])}>
+                    <div key={risk.id} className={cn("rounded-lg border p-2 md:p-3 space-y-1.5 md:space-y-2", config.bgColor)}>
+                      <div className="flex items-start justify-between gap-1.5 md:gap-2">
+                        <p className="text-[10px] md:text-sm font-medium leading-tight">{risk.title}</p>
+                        <Badge className={cn("text-[8px] md:text-[9px] shrink-0", impactColors[risk.impact])}>
                           {risk.impact}
                         </Badge>
                       </div>
                       {risk.description && (
-                        <p className="text-[11px] text-muted-foreground leading-relaxed">{risk.description}</p>
+                        <p className="text-[9px] md:text-[11px] text-muted-foreground leading-relaxed hidden md:block">{risk.description}</p>
                       )}
                       {risk.mitigation && (
-                        <div className="text-[11px]">
+                        <div className="text-[9px] md:text-[11px] hidden md:block">
                           <span className="font-medium text-muted-foreground">Mitigation: </span>
                           <span className="text-zinc-300">{risk.mitigation}</span>
                         </div>
                       )}
-                      <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                      <div className="flex items-center gap-1.5 md:gap-2 text-[9px] md:text-[10px] text-muted-foreground">
                         {risk.team && (
                           <span className="flex items-center gap-1">
                             <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: risk.team.color }} />
-                            {risk.team.name}
+                            <span className="hidden md:inline">{risk.team.name}</span>
                           </span>
                         )}
-                        {risk.owner && <span>• {risk.owner.user.name}</span>}
+                        {risk.owner && <span className="hidden md:inline">• {risk.owner.user.name}</span>}
                       </div>
                     </div>
                   ))}
@@ -164,27 +164,27 @@ export default function RisksPage() {
         {/* Open Risks (Unroamed) */}
         {openRisks.length > 0 && (
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-sm text-red-400">
-                <AlertTriangle className="h-4 w-4" />
+            <CardHeader className="pb-2 md:pb-3">
+              <CardTitle className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-red-400">
+                <AlertTriangle className="h-3 w-3 md:h-4 md:w-4" />
                 Unroamed Risks — Need Classification ({openRisks.length})
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid gap-2">
+            <CardContent className="p-2 md:p-4">
+              <div className="grid gap-1.5 md:gap-2">
                 {openRisks.map(risk => (
-                  <div key={risk.id} className="flex items-center gap-4 rounded-lg border border-red-500/20 bg-red-500/5 p-3">
-                    <Badge className={cn("text-[9px] shrink-0 w-16 justify-center", impactColors[risk.impact])}>
+                  <div key={risk.id} className="flex items-center gap-2 md:gap-4 rounded-lg border border-red-500/20 bg-red-500/5 p-2 md:p-3">
+                    <Badge className={cn("text-[8px] md:text-[9px] shrink-0 w-16 justify-center", impactColors[risk.impact])}>
                       {risk.impact}
                     </Badge>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium">{risk.title}</p>
-                      {risk.description && <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{risk.description}</p>}
+                      <p className="text-[10px] md:text-sm font-medium">{risk.title}</p>
+                      {risk.description && <p className="text-[9px] md:text-[11px] text-muted-foreground mt-0.5 truncate hidden md:block">{risk.description}</p>}
                     </div>
                     {risk.team && (
-                      <span className="flex items-center gap-1 text-xs text-muted-foreground shrink-0">
-                        <span className="h-2 w-2 rounded-full" style={{ backgroundColor: risk.team.color }} />
-                        {risk.team.name}
+                      <span className="flex items-center gap-1 text-[10px] md:text-xs text-muted-foreground shrink-0">
+                        <span className="h-1.5 w-1.5 md:h-2 md:w-2 rounded-full" style={{ backgroundColor: risk.team.color }} />
+                        <span className="hidden md:inline">{risk.team.name}</span>
                       </span>
                     )}
                   </div>
@@ -196,8 +196,8 @@ export default function RisksPage() {
 
         {/* Legend */}
         <Card>
-          <CardContent className="p-4">
-            <div className="text-xs">
+          <CardContent className="p-2 md:p-4">
+            <div className="text-[9px] md:text-xs">
               <span className="font-medium text-muted-foreground">ROAM Framework: </span>
               <span className="text-emerald-400 font-medium">Resolved</span> — Issue dealt with.{' '}
               <span className="text-blue-400 font-medium">Owned</span> — Someone assigned to manage.{' '}

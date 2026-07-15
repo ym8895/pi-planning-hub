@@ -18,11 +18,10 @@ import {
   Zap,
   ListTodo,
   Trophy,
-  Shield,
-  LineChart,
-  BookOpen,
+  Menu,
+  X,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface NavItem {
   label: string;
@@ -42,65 +41,116 @@ const navItems: NavItem[] = [
   { label: "Capacity", href: "/capacity", icon: BarChart3 },
   { label: "Confidence", href: "/confidence", icon: Trophy },
   { label: "Analytics", href: "/analytics", icon: BarChart3 },
-  { label: "Charts", href: "/charts", icon: LineChart },
+  { label: "Charts", href: "/charts", icon: BarChart3 },
   { label: "Settings", href: "/settings", icon: Settings },
-  { label: "Resources", href: "/resources", icon: BookOpen },
+  { label: "Resources", href: "/resources", icon: Settings },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  if (isMobile) {
+    return (
+      <>
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="fixed top-3 left-3 z-50 p-2 rounded-lg bg-zinc-800 border border-zinc-700 md:hidden"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+
+        {mobileOpen && (
+          <div className="fixed inset-0 z-50 md:hidden">
+            <div className="absolute inset-0 bg-black/60" onClick={() => setMobileOpen(false)} />
+            <aside className="absolute left-0 top-0 h-full w-64 bg-zinc-900 border-r border-zinc-800 flex flex-col">
+              <div className="flex h-14 items-center justify-between border-b border-zinc-800 px-4">
+                <div className="flex items-center gap-2">
+                  <Zap className="h-5 w-5 text-indigo-400" />
+                  <span className="font-bold">PI Hub</span>
+                </div>
+                <button onClick={() => setMobileOpen(false)} className="p-1">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <nav className="flex-1 space-y-1 p-2 overflow-y-auto">
+                {navItems.map((item) => {
+                  const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
+                        isActive
+                          ? "bg-indigo-500/20 text-indigo-400"
+                          : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
+                      )}
+                    >
+                      <item.icon className="h-4 w-4 shrink-0" />
+                      <span>{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </nav>
+            </aside>
+          </div>
+        )}
+      </>
+    );
+  }
 
   return (
     <aside
       className={cn(
-        "flex flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-all duration-300",
-        collapsed ? "w-16" : "w-64"
+        "hidden md:flex flex-col border-r border-zinc-800 bg-zinc-900 transition-all duration-300",
+        collapsed ? "w-16" : "w-56"
       )}
     >
-      {/* Logo */}
-      <div className="flex h-14 items-center border-b border-sidebar-border px-4">
-        <Zap className="h-6 w-6 shrink-0 text-primary" />
-        {!collapsed && (
-          <span className="ml-2 text-lg font-bold tracking-tight">PI Hub</span>
-        )}
+      <div className="flex h-12 items-center border-b border-zinc-800 px-3">
+        <Zap className="h-5 w-5 shrink-0 text-indigo-400" />
+        {!collapsed && <span className="ml-2 font-bold text-sm">PI Hub</span>}
       </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 space-y-1 p-2">
+      <nav className="flex-1 space-y-0.5 p-1.5 overflow-y-auto">
         {navItems.map((item) => {
-          const isActive =
-            pathname === item.href || pathname.startsWith(item.href + "/");
+          const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                "flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
                 isActive
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                  ? "bg-indigo-500/20 text-indigo-400"
+                  : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
               )}
               title={collapsed ? item.label : undefined}
             >
-              <item.icon className="h-4 w-4 shrink-0" />
+              <item.icon className="h-3.5 w-3.5 shrink-0" />
               {!collapsed && <span>{item.label}</span>}
             </Link>
           );
         })}
       </nav>
-
-      {/* Collapse toggle */}
-      <div className="border-t border-sidebar-border p-2">
+      <div className="border-t border-zinc-800 p-1.5">
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="flex w-full items-center justify-center rounded-md p-2 text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+          className="flex w-full items-center justify-center rounded-md p-1.5 text-zinc-500 hover:bg-zinc-800 hover:text-zinc-300"
         >
-          {collapsed ? (
-            <ChevronRight className="h-4 w-4" />
-          ) : (
-            <ChevronLeft className="h-4 w-4" />
-          )}
+          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </button>
       </div>
     </aside>

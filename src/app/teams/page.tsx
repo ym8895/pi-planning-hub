@@ -87,9 +87,9 @@ export default function TeamsPage() {
     <AppShell>
       <div className="space-y-6">
           <div>
-            <a href="/dashboard" className="text-xs text-muted-foreground hover:text-foreground transition-colors">&larr; Back to Dashboard</a>
-            <h1 className="text-2xl font-bold">Teams</h1>
-            <p className="text-muted-foreground mt-1">Team management and members</p>
+            <a href="/dashboard" className="text-[10px] md:text-xs text-muted-foreground hover:text-foreground transition-colors">&larr; Back to Dashboard</a>
+            <h1 className="text-lg md:text-2xl font-bold">Teams</h1>
+            <p className="text-xs md:text-sm text-muted-foreground mt-1">Team management and members</p>
           </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -107,55 +107,55 @@ export default function TeamsPage() {
               return (
                 <Card key={team.id} className="relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: team.color }} />
-                  <CardHeader className="pb-3 pt-5">
+                  <CardHeader className="pb-2 pt-3 md:pb-3 md:pt-5">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="h-3 w-3 rounded-full" style={{ backgroundColor: team.color }} />
-                        <CardTitle className="text-lg">{team.name}</CardTitle>
+                      <div className="flex items-center gap-1.5 md:gap-2">
+                        <span className="h-2 w-2 md:h-3 md:w-3 rounded-full" style={{ backgroundColor: team.color }} />
+                        <CardTitle className="text-sm md:text-lg">{team.name}</CardTitle>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="gap-1">
+                      <div className="flex items-center gap-1.5 md:gap-2">
+                        <Badge variant="outline" className="gap-1 text-[9px] md:text-[10px]">
                           <Zap className="h-3 w-3" />
                           {team.velocity} vel
                         </Badge>
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(team)}>
+                        <Button variant="ghost" size="icon" className="h-6 w-6 md:h-7 md:w-7" onClick={() => openEdit(team)}>
                           <Pencil className="h-3.5 w-3.5" />
                         </Button>
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-3 gap-2 text-center text-sm">
-                      <div className="rounded bg-zinc-800/50 p-2">
-                        <p className="text-lg font-bold">{team.stories.length}</p>
-                        <p className="text-xs text-muted-foreground">Stories</p>
+                  <CardContent className="space-y-3 md:space-y-4 p-2 md:p-4">
+                    <div className="grid grid-cols-3 gap-1.5 md:gap-2 text-center text-[10px] md:text-sm">
+                      <div className="rounded bg-zinc-800/50 p-1.5 md:p-2">
+                        <p className="text-sm md:text-lg font-bold">{team.stories.length}</p>
+                        <p className="text-[9px] md:text-xs text-muted-foreground">Stories</p>
                       </div>
-                      <div className="rounded bg-zinc-800/50 p-2">
-                        <p className="text-lg font-bold text-emerald-400">{doneCount}</p>
-                        <p className="text-xs text-muted-foreground">Done</p>
+                      <div className="rounded bg-zinc-800/50 p-1.5 md:p-2">
+                        <p className="text-sm md:text-lg font-bold text-emerald-400">{doneCount}</p>
+                        <p className="text-[9px] md:text-xs text-muted-foreground">Done</p>
                       </div>
-                      <div className="rounded bg-zinc-800/50 p-2">
-                        <p className="text-lg font-bold">{totalPoints}</p>
-                        <p className="text-xs text-muted-foreground">Points</p>
+                      <div className="rounded bg-zinc-800/50 p-1.5 md:p-2">
+                        <p className="text-sm md:text-lg font-bold">{totalPoints}</p>
+                        <p className="text-[9px] md:text-xs text-muted-foreground">Points</p>
                       </div>
                     </div>
 
                     {latestCapacity && (
                       <div className="space-y-1">
-                        <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center justify-between text-[10px] md:text-sm">
                           <span className="text-muted-foreground">Utilization</span>
                           <span className={cn("font-medium", utilization > 100 ? "text-red-400" : utilization > 85 ? "text-amber-400" : "text-emerald-400")}>
                             {utilization}%
                           </span>
                         </div>
-                        <div className="h-1.5 rounded-full bg-zinc-800 overflow-hidden">
+                        <div className="h-1 md:h-1.5 rounded-full bg-zinc-800 overflow-hidden">
                           <div
                             className={cn("h-full rounded-full transition-all", utilization > 100 ? "bg-red-500" : utilization > 85 ? "bg-amber-500" : "bg-emerald-500")}
                             style={{ width: `${Math.min(utilization, 100)}%` }}
                           />
                         </div>
                         {latestCapacity.overloaded && (
-                          <div className="flex items-center gap-1 text-xs text-red-400 mt-1">
+                          <div className="flex items-center gap-1 text-[10px] md:text-xs text-red-400 mt-1">
                             <AlertTriangle className="h-3 w-3" /> Overloaded
                           </div>
                         )}
@@ -163,12 +163,12 @@ export default function TeamsPage() {
                     )}
 
                     <div>
-                      <p className="text-sm font-medium mb-2">Members ({team.members.length})</p>
+                      <p className="text-xs md:text-sm font-medium mb-2">Members ({team.members.length})</p>
                       <div className="space-y-1">
                         {team.members.map(m => (
-                          <div key={m.id} className="flex items-center justify-between text-sm">
-                            <span>{m.user.name}</span>
-                            <Badge className={cn("text-[10px]", roleColors[m.role] ?? "bg-zinc-500/15 text-zinc-400")}>
+                          <div key={m.id} className="flex items-center justify-between text-[10px] md:text-sm">
+                            <span className="truncate">{m.user.name}</span>
+                            <Badge className={cn("text-[9px] md:text-[10px]", roleColors[m.role] ?? "bg-zinc-500/15 text-zinc-400")}>
                               {m.role}
                             </Badge>
                           </div>
@@ -178,9 +178,9 @@ export default function TeamsPage() {
 
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <p className="text-sm font-medium">Features ({team.features.length})</p>
+                        <p className="text-xs md:text-sm font-medium">Features ({team.features.length})</p>
                         {team.features.length > 0 && (
-                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <div className="flex items-center gap-1 text-[10px] md:text-xs text-muted-foreground">
                             <TrendingUp className="h-3 w-3" />
                             {team.features.filter(f => f.status === "DONE").length} done
                           </div>
@@ -188,13 +188,13 @@ export default function TeamsPage() {
                       </div>
                       <div className="space-y-1">
                         {team.features.slice(0, 4).map(f => (
-                          <div key={f.id} className="flex items-center justify-between text-sm">
+                          <div key={f.id} className="flex items-center justify-between text-[10px] md:text-sm">
                             <span className="truncate">{f.name}</span>
-                            <Badge variant="outline" className="text-[10px]">{f.status.replace("_", " ")}</Badge>
+                            <Badge variant="outline" className="text-[9px] md:text-[10px]">{f.status.replace("_", " ")}</Badge>
                           </div>
                         ))}
                         {team.features.length > 4 && (
-                          <p className="text-xs text-muted-foreground">+{team.features.length - 4} more</p>
+                          <p className="text-[9px] md:text-xs text-muted-foreground">+{team.features.length - 4} more</p>
                         )}
                       </div>
                     </div>

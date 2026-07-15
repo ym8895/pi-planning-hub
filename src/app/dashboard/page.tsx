@@ -64,43 +64,43 @@ export default function DashboardPage() {
 
   return (
     <AppShell>
-      <div className="space-y-4">
+      <div className="space-y-3 md:space-y-4">
 
         {/* Header + PI bar */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+          <div className="flex items-center gap-3 md:gap-4">
             <div>
-              <h1 className="text-lg font-bold leading-tight">{data.art.name}</h1>
-              <p className="text-xs text-muted-foreground">{data.art.organization.name}{data.currentPI ? ` — ${data.currentPI.name}` : ""}</p>
+              <h1 className="text-base md:text-lg font-bold leading-tight">{data.art.name}</h1>
+              <p className="text-[10px] md:text-xs text-muted-foreground">{data.art.organization.name}{data.currentPI ? ` — ${data.currentPI.name}` : ""}</p>
             </div>
             {data.currentPI && (
-              <div className="flex items-center gap-2 ml-4">
-                <Badge variant={data.currentPI.status === "EXECUTING" ? "success" : "info"} className="text-[10px] px-1.5 py-0">{data.currentPI.status}</Badge>
-                {data.currentIteration && <span className="text-[11px] text-muted-foreground">{data.currentIteration}</span>}
+              <div className="flex items-center gap-2 ml-2 md:ml-4">
+                <Badge variant={data.currentPI.status === "EXECUTING" ? "success" : "info"} className="text-[9px] md:text-[10px] px-1.5 py-0">{data.currentPI.status}</Badge>
+                {data.currentIteration && <span className="text-[10px] md:text-[11px] text-muted-foreground">{data.currentIteration}</span>}
               </div>
             )}
           </div>
           {data.currentPI && (
-            <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+            <div className="flex items-center gap-2 text-[10px] md:text-[11px] text-muted-foreground">
               <span>{data.piDaysElapsed}/{data.piDaysTotal}d</span>
-              <div className="w-24"><Progress value={piPct} className="h-1" /></div>
+              <div className="w-20 md:w-24"><Progress value={piPct} className="h-1" /></div>
               <span>{piPct}%</span>
             </div>
           )}
         </div>
 
         {/* Main split */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
 
           {/* LEFT: 3 Sections with colored left borders */}
-          <div className="space-y-3">
+          <div className="space-y-2 md:space-y-3">
             {/* Delivery */}
-            <div className="rounded-xl border-l-4 border-l-cyan-500 bg-white/[.02] p-3">
+            <div className="rounded-xl border-l-4 border-l-cyan-500 bg-white/[.02] p-2.5 md:p-3">
               <div className="flex items-center gap-1.5 mb-2">
-                <Rocket className="h-3.5 w-3.5 text-cyan-400" />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400">Delivery Progress</span>
+                <Rocket className="h-3 w-3 md:h-3.5 md:w-3.5 text-cyan-400" />
+                <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-wider text-cyan-400">Delivery Progress</span>
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-1.5 md:gap-2">
                 <StatCard icon={Layers} label="Features" value={`${data.featuresDone}/${data.features}`} iconBg="bg-cyan-500/15" sub={`${featPct}% done`} />
                 <StatCard icon={ListTodo} label="Stories" value={`${data.done}/${data.stories}`} iconBg="bg-amber-500/15" sub={`${storyPct}% done`} />
                 <StatCard icon={Zap} label="Points" value={`${data.completedPoints}/${data.totalPoints}`} iconBg="bg-yellow-500/15" sub={`${pointPct}% delivered`} />
@@ -109,12 +109,12 @@ export default function DashboardPage() {
             </div>
 
             {/* Work Status */}
-            <div className="rounded-xl border-l-4 border-l-emerald-500 bg-white/[.02] p-3">
+            <div className="rounded-xl border-l-4 border-l-emerald-500 bg-white/[.02] p-2.5 md:p-3">
               <div className="flex items-center gap-1.5 mb-2">
-                <Activity className="h-3.5 w-3.5 text-emerald-400" />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Work Status</span>
+                <Activity className="h-3 w-3 md:h-3.5 md:w-3.5 text-emerald-400" />
+                <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-wider text-emerald-400">Work Status</span>
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-1.5 md:gap-2">
                 <StatCard icon={CheckCircle2} label="Done" value={data.done} iconBg="bg-emerald-500/15" sub={`${data.featuresDone} features`} />
                 <StatCard icon={Activity} label="Active" value={data.inProgress} iconBg="bg-blue-500/15" sub={`${data.featuresInProgress} features`} />
                 <StatCard icon={ListTodo} label="To Do" value={data.todo} iconBg="bg-zinc-500/15" sub={`${data.featuresPlanned + data.featuresBacklog} features`} />
@@ -123,12 +123,12 @@ export default function DashboardPage() {
             </div>
 
             {/* Teams & Risks */}
-            <div className="rounded-xl border-l-4 border-l-purple-500 bg-white/[.02] p-3">
+            <div className="rounded-xl border-l-4 border-l-purple-500 bg-white/[.02] p-2.5 md:p-3">
               <div className="flex items-center gap-1.5 mb-2">
-                <Shield className="h-3.5 w-3.5 text-purple-400" />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400">Teams & Risks</span>
+                <Shield className="h-3 w-3 md:h-3.5 md:w-3.5 text-purple-400" />
+                <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-wider text-purple-400">Teams & Risks</span>
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-1.5 md:gap-2">
                 <StatCard icon={Users} label="Teams" value={data.teams} iconBg="bg-purple-500/15" sub={`${data.velocity} vel`} />
                 <StatCard icon={GitBranch} label="Open Deps" value={data.openDependencies} iconBg="bg-orange-500/15" sub="Cross-team" />
                 <StatCard icon={GitPullRequest} label="Blocked Deps" value={data.blockedDependencies} iconBg="bg-red-500/15" sub="Critical" />
@@ -137,14 +137,14 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* RIGHT: Feature Status + Role Insights side-by-side, Quick Nav full-width below */}
-          <div className="space-y-3">
-            <div className="flex gap-3">
+          {/* RIGHT: Feature Status + Role Insights stacked on mobile, side-by-side on md+ */}
+          <div className="space-y-2 md:space-y-3">
+            <div className="flex flex-col md:flex-row gap-2 md:gap-3">
               {/* Feature Status */}
-              <div className="flex-1 rounded-xl bg-white/[.02] border border-white/5 p-3">
+              <div className="flex-1 rounded-xl bg-white/[.02] border border-white/5 p-2.5 md:p-3">
                 <div className="flex items-center gap-1.5 mb-2">
-                  <BarChart3 className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Feature Status</span>
+                  <BarChart3 className="h-3 w-3 md:h-3.5 md:w-3.5 text-muted-foreground" />
+                  <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Feature Status</span>
                 </div>
                 <div className="space-y-1.5">
                   {[
@@ -158,35 +158,35 @@ export default function DashboardPage() {
                       <div className="flex items-center justify-between mb-0.5">
                         <div className="flex items-center gap-1.5">
                           <span className={cn("h-1.5 w-1.5 rounded-full", item.color)} />
-                          <span className="text-[11px] text-muted-foreground">{item.label}</span>
+                          <span className="text-[10px] md:text-[11px] text-muted-foreground">{item.label}</span>
                         </div>
-                        <span className="text-[11px] font-bold">{item.count} <span className="text-muted-foreground font-normal">/ {item.total}</span></span>
+                        <span className="text-[10px] md:text-[11px] font-bold">{item.count} <span className="text-muted-foreground font-normal">/ {item.total}</span></span>
                       </div>
                       <Progress value={item.total > 0 ? (item.count / item.total) * 100 : 0} className="h-1" />
                     </div>
                   ))}
-                  <div className="pt-1 border-t border-white/5 flex gap-3">
+                  <div className="pt-1 border-t border-white/5 flex gap-2 md:gap-3">
                     <div className="flex items-center gap-1.5">
                       <span className="h-1.5 w-1.5 rounded-full bg-blue-400" />
-                      <span className="text-[10px] text-muted-foreground">Business: {data.featuresBusiness}</span>
+                      <span className="text-[9px] md:text-[10px] text-muted-foreground">Business: {data.featuresBusiness}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <span className="h-1.5 w-1.5 rounded-full bg-violet-400" />
-                      <span className="text-[10px] text-muted-foreground">Enabler: {data.featuresEnabler}</span>
+                      <span className="text-[9px] md:text-[10px] text-muted-foreground">Enabler: {data.featuresEnabler}</span>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Role-Based Insights */}
-              <div className="flex-1 rounded-xl bg-white/[.02] border border-white/5 p-3">
+              <div className="flex-1 rounded-xl bg-white/[.02] border border-white/5 p-2.5 md:p-3">
                 <div className="flex items-center gap-1.5 mb-2">
-                  <Shield className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                  <Shield className="h-3 w-3 md:h-3.5 md:w-3.5 text-muted-foreground" />
+                  <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                     {isRTE ? "RTE Overview" : isSM ? "Scrum Master View" : isPO ? "Product Owner View" : "Team View"}
                   </span>
                 </div>
-                <div className="space-y-1 text-[11px]">
+                <div className="space-y-1 text-[10px] md:text-[11px]">
                   {isRTE && (
                     <>
                       <a href="/dependencies" className="flex justify-between hover:bg-white/[.03] rounded px-1 py-0.5 transition-colors"><span className="text-muted-foreground">Open Dependencies</span><span className="font-bold">{data.openDependencies}</span></a>
@@ -223,13 +223,13 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Quick Navigation — full width */}
-            <div className="rounded-xl bg-white/[.02] border border-white/5 p-3">
+            {/* Quick Navigation — grid on desktop, 2-col on mobile */}
+            <div className="rounded-xl bg-white/[.02] border border-white/5 p-2.5 md:p-3">
               <div className="flex items-center gap-1.5 mb-2">
-                <Rocket className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Quick Navigation</span>
+                <Rocket className="h-3 w-3 md:h-3.5 md:w-3.5 text-muted-foreground" />
+                <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Quick Navigation</span>
               </div>
-              <div className="grid grid-cols-6 gap-1.5">
+              <div className="grid grid-cols-3 md:grid-cols-6 gap-1.5">
                 {[
                   { href: "/backlog", label: "Backlog", sub: "WSJF ranking", value: data.features, icon: Layers, color: "text-cyan-400" },
                   { href: "/board", label: "Board", sub: "Visual planning", value: data.stories, icon: BarChart3, color: "text-amber-400" },
@@ -238,10 +238,10 @@ export default function DashboardPage() {
                   { href: "/capacity", label: "Capacity", sub: "Team load", value: data.teams, icon: Users, color: "text-indigo-400" },
                   { href: "/confidence", label: "Confidence", sub: "Vote results", value: data.teams, icon: Zap, color: "text-yellow-400" },
                 ].map(item => (
-                  <a key={item.href} href={item.href} className="flex flex-col items-center justify-center gap-0.5 rounded-lg bg-white/[.03] border border-white/5 px-2 py-1.5 text-center transition-colors hover:bg-white/[.06]">
-                    <item.icon className={cn("h-3.5 w-3.5 shrink-0", item.color)} />
-                    <span className="text-[11px] font-medium leading-tight">{item.label}</span>
-                    <span className="text-sm font-bold leading-tight">{item.value}</span>
+                  <a key={item.href} href={item.href} className="flex flex-col items-center justify-center gap-0.5 rounded-lg bg-white/[.03] border border-white/5 px-1.5 md:px-2 py-2 text-center transition-colors hover:bg-white/[.06]">
+                    <item.icon className={cn("h-3 w-3 md:h-3.5 md:w-3.5 shrink-0", item.color)} />
+                    <span className="text-[9px] md:text-[11px] font-medium leading-tight">{item.label}</span>
+                    <span className="text-xs md:text-sm font-bold leading-tight">{item.value}</span>
                   </a>
                 ))}
               </div>

@@ -294,26 +294,26 @@ export default function BoardPage() {
 
   return (
     <AppShell>
-      <div className="space-y-4">
+      <div className="space-y-3 md:space-y-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <a href="/dashboard" className="text-xs text-muted-foreground hover:text-foreground transition-colors">&larr; Back to Dashboard</a>
-            <h1 className="text-2xl font-bold">Program Board</h1>
-            <p className="text-muted-foreground mt-1">{data.pi.name} — {data.pi.status}</p>
+            <a href="/dashboard" className="text-[10px] md:text-xs text-muted-foreground hover:text-foreground transition-colors">&larr; Back to Dashboard</a>
+            <h1 className="text-lg md:text-2xl font-bold">Program Board</h1>
+            <p className="text-muted-foreground mt-1 text-xs md:text-sm">{data.pi.name} — {data.pi.status}</p>
           </div>
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2 md:gap-3 flex-wrap">
             <Filter className="h-4 w-4 text-muted-foreground" />
             <select
               value={selectedPI}
               onChange={(e) => { setSelectedPI(e.target.value); fetchBoard(e.target.value); }}
-              className="h-8 rounded-md border border-zinc-700 bg-zinc-900 px-2 text-xs text-zinc-300 focus:outline-none focus:ring-1 focus:ring-zinc-500"
+              className="h-7 md:h-8 rounded-md border border-zinc-700 bg-zinc-900 px-2 text-[10px] md:text-xs text-zinc-300 focus:outline-none focus:ring-1 focus:ring-zinc-500"
             >
               {data.allPIs.map(pi => <option key={pi.id} value={pi.id}>{pi.name} ({pi.status})</option>)}
             </select>
             <select
               value={selectedTeam}
               onChange={(e) => setSelectedTeam(e.target.value)}
-              className="h-8 rounded-md border border-zinc-700 bg-zinc-900 px-2 text-xs text-zinc-300 focus:outline-none focus:ring-1 focus:ring-zinc-500"
+              className="h-7 md:h-8 rounded-md border border-zinc-700 bg-zinc-900 px-2 text-[10px] md:text-xs text-zinc-300 focus:outline-none focus:ring-1 focus:ring-zinc-500"
             >
               <option value="all">All Teams</option>
               {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
@@ -321,37 +321,38 @@ export default function BoardPage() {
             <Button
               variant={showDependencies ? "default" : "outline"}
               size="sm"
-              className="h-8 gap-1"
+              className="h-7 md:h-8 gap-1 text-[10px] md:text-xs"
               onClick={() => setShowDependencies(!showDependencies)}
             >
-              {showDependencies ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
-              Dependencies
+              {showDependencies ? <Eye className="h-3 w-3 md:h-3.5 md:w-3.5" /> : <EyeOff className="h-3 w-3 md:h-3.5 md:w-3.5" />}
+              <span className="hidden sm:inline">Dependencies</span>
+              <span className="sm:hidden">Deps</span>
               {data.dependencies.length > 0 && (
-                <Badge variant="secondary" className="ml-1 text-[10px]">{data.dependencies.length}</Badge>
+                <Badge variant="secondary" className="ml-1 text-[9px] md:text-[10px]">{data.dependencies.length}</Badge>
               )}
             </Button>
-            <Badge variant="outline" className="text-[10px]">{totalStories} stories</Badge>
-            <Badge variant="outline" className="text-[10px]">{totalPts} pts</Badge>
-            {donePts > 0 && <Badge variant="outline" className="text-[10px] text-emerald-400">{donePts} done</Badge>}
+            <Badge variant="outline" className="text-[9px] md:text-[10px]">{totalStories} stories</Badge>
+            <Badge variant="outline" className="text-[9px] md:text-[10px]">{totalPts} pts</Badge>
+            {donePts > 0 && <Badge variant="outline" className="text-[9px] md:text-[10px] text-emerald-400">{donePts} done</Badge>}
             <Button
               variant="outline"
               size="sm"
-              className="h-8 gap-1"
+              className="h-7 md:h-8 gap-1 text-[10px] md:text-xs"
               onClick={() => window.print()}
             >
-              <Printer className="h-3.5 w-3.5" /> Export
+              <Printer className="h-3 w-3 md:h-3.5 md:w-3.5" /> Export
             </Button>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-1.5 md:gap-2 flex-wrap">
           {teams.map(t => {
             const pts = t.stories.reduce((s: number, st: any) => s + st.storyPoints, 0);
             return (
-              <div key={t.id} className="flex items-center gap-1.5 rounded-full border border-zinc-800 bg-zinc-900/50 px-2.5 py-1">
-                <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: t.color }} />
-                <span className="text-xs font-medium">{t.name}</span>
-                <span className="text-[10px] text-muted-foreground">{pts}pt</span>
+              <div key={t.id} className="flex items-center gap-1 md:gap-1.5 rounded-full border border-zinc-800 bg-zinc-900/50 px-2 md:px-2.5 py-0.5 md:py-1">
+                <span className="h-1.5 w-1.5 md:h-2 md:w-2 rounded-full shrink-0" style={{ backgroundColor: t.color }} />
+                <span className="text-[10px] md:text-xs font-medium">{t.name}</span>
+                <span className="text-[9px] md:text-[10px] text-muted-foreground">{pts}pt</span>
               </div>
             );
           })}
@@ -505,27 +506,27 @@ export default function BoardPage() {
           </Card>
         )}
 
-        <div className="flex items-center gap-4 text-xs flex-wrap">
+        <div className="flex items-center gap-2 md:gap-4 text-[10px] md:text-xs flex-wrap">
           <span className="font-medium text-muted-foreground">Legend:</span>
           {Object.entries(statusColors).map(([s, c]) => (
-            <div key={s} className="flex items-center gap-1.5"><span className={cn("h-2.5 w-2.5 rounded border", c)} /><span>{s}</span></div>
+            <div key={s} className="flex items-center gap-1 md:gap-1.5"><span className={cn("h-2 w-2 md:h-2.5 md:w-2.5 rounded border", c)} /><span>{s}</span></div>
           ))}
           <span className="text-muted-foreground">|</span>
-          <div className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded bg-amber-500/10 border border-amber-500/20" />
+          <div className="flex items-center gap-1 md:gap-1.5">
+            <span className="h-2 w-2 md:h-2.5 md:w-2.5 rounded bg-amber-500/10 border border-amber-500/20" />
             <span>IP Sprint</span>
           </div>
           <span className="text-muted-foreground">|</span>
-          <div className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
-            <span>Dependency Source</span>
+          <div className="flex items-center gap-1 md:gap-1.5">
+            <span className="h-2 w-2 md:h-2.5 md:w-2.5 rounded-full bg-amber-500" />
+            <span>Dep Source</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-blue-500" />
-            <span>Dependency Target</span>
+          <div className="flex items-center gap-1 md:gap-1.5">
+            <span className="h-2 w-2 md:h-2.5 md:w-2.5 rounded-full bg-blue-500" />
+            <span>Dep Target</span>
           </div>
           <span className="text-muted-foreground">|</span>
-          <span className="text-muted-foreground">Drag cards between cells to reschedule</span>
+          <span className="text-muted-foreground hidden sm:inline">Drag cards between cells to reschedule</span>
         </div>
 
         <StoryForm

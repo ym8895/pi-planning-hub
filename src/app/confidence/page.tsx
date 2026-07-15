@@ -72,29 +72,30 @@ export default function ConfidencePage() {
     <AppShell>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold">Confidence Voting</h1>
-          <p className="text-muted-foreground mt-1">{data.pi.name} — PI Confidence Assessment</p>
+          <a href="/dashboard" className="text-[10px] md:text-xs text-muted-foreground hover:text-foreground transition-colors">&larr; Back to Dashboard</a>
+          <h1 className="text-lg md:text-2xl font-bold">Confidence Voting</h1>
+          <p className="text-xs md:text-sm text-muted-foreground mt-1">{data.pi.name} — PI Confidence Assessment</p>
         </div>
 
         {/* Overall Confidence */}
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-6">
-              <div className={cn("rounded-2xl p-6", overallInfo.bg)}>
-                <div className={cn("text-4xl font-bold", overallInfo.color)}>
+          <CardContent className="p-3 md:p-6">
+            <div className="flex items-center gap-3 md:gap-6">
+              <div className={cn("rounded-xl md:rounded-2xl p-3 md:p-6", overallInfo.bg)}>
+                <div className={cn("text-2xl md:text-4xl font-bold", overallInfo.color)}>
                   {data.overallAverage}
                 </div>
-                <div className="text-xs text-muted-foreground mt-1">/5.0</div>
+                <div className="text-[10px] md:text-xs text-muted-foreground mt-1">/5.0</div>
               </div>
               <div>
-                <h2 className="text-lg font-semibold">Overall ART Confidence</h2>
-                <p className={cn("text-sm font-medium mt-1", overallInfo.color)}>{overallInfo.label}</p>
-                <p className="text-xs text-muted-foreground mt-2">
+                <h2 className="text-sm md:text-lg font-semibold">Overall ART Confidence</h2>
+                <p className={cn("text-[10px] md:text-sm font-medium mt-1", overallInfo.color)}>{overallInfo.label}</p>
+                <p className="text-[10px] md:text-xs text-muted-foreground mt-2">
                   {data.totalVotes} votes across {data.teamConfidence.length} teams
                 </p>
-                <div className="flex items-center gap-2 mt-3">
+                <div className="flex items-center gap-1.5 md:gap-2 mt-2 md:mt-3">
                   {getTrendIcon(data.overallAverage)}
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-[10px] md:text-xs text-muted-foreground">
                     {data.overallAverage >= 4 ? "Teams are confident in PI delivery" :
                      data.overallAverage >= 3 ? "Moderate confidence — some risks to monitor" :
                      "Low confidence — action needed to address blockers"}
@@ -106,25 +107,25 @@ export default function ConfidencePage() {
         </Card>
 
         {/* Team Confidence Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-4">
           {data.teamConfidence.map(tc => {
             const info = getScoreInfo(tc.average);
             return (
               <Card key={tc.teamId}>
-                <CardContent className="p-4 space-y-3">
-                  <div className="flex items-center gap-2">
-                    <span className="h-3 w-3 rounded-full" style={{ backgroundColor: tc.teamColor }} />
-                    <span className="font-medium text-sm">{tc.teamName}</span>
+                <CardContent className="p-2 md:p-4 space-y-2 md:space-y-3">
+                  <div className="flex items-center gap-1.5 md:gap-2">
+                    <span className="h-2 w-2 md:h-3 md:w-3 rounded-full" style={{ backgroundColor: tc.teamColor }} />
+                    <span className="font-medium text-[10px] md:text-sm truncate">{tc.teamName}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <div className={cn("rounded-lg px-3 py-2", info.bg)}>
-                      <span className={cn("text-2xl font-bold", info.color)}>{tc.average}</span>
+                    <div className={cn("rounded-lg px-2 py-1 md:px-3 md:py-2", info.bg)}>
+                      <span className={cn("text-lg md:text-2xl font-bold", info.color)}>{tc.average}</span>
                     </div>
                     {getTrendIcon(tc.average)}
                   </div>
-                  <div className="text-xs text-muted-foreground">{tc.voteCount} vote(s)</div>
+                  <div className="text-[9px] md:text-xs text-muted-foreground">{tc.voteCount} vote(s)</div>
                   {tc.latestComment && (
-                    <p className="text-[11px] text-zinc-400 leading-relaxed italic">
+                    <p className="text-[9px] md:text-[11px] text-zinc-400 leading-relaxed italic hidden md:block">
                       "{tc.latestComment}"
                     </p>
                   )}
@@ -136,29 +137,29 @@ export default function ConfidencePage() {
 
         {/* Detailed Votes */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">All Votes</CardTitle>
+          <CardHeader className="pb-2 md:pb-3">
+            <CardTitle className="text-xs md:text-sm">All Votes</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
+          <CardContent className="p-2 md:p-4">
+            <div className="space-y-2 md:space-y-3">
               {data.votes.map((vote) => {
                 const info = getScoreInfo(vote.score);
                 return (
-                  <div key={vote.id} className="flex items-start gap-4 rounded-lg border border-zinc-800 p-4">
-                    <div className={cn("rounded-lg px-2 py-1 text-sm font-bold shrink-0", info.bg, info.color)}>
+                  <div key={vote.id} className="flex items-start gap-2 md:gap-4 rounded-lg border border-zinc-800 p-2 md:p-4">
+                    <div className={cn("rounded-lg px-1.5 py-1 md:px-2 md:py-1 text-[10px] md:text-sm font-bold shrink-0", info.bg, info.color)}>
                       {vote.score}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="flex items-center gap-1.5 text-sm font-medium">
-                          <span className="h-2 w-2 rounded-full" style={{ backgroundColor: vote.team.color }} />
+                      <div className="flex items-center gap-1.5 md:gap-2">
+                        <span className="flex items-center gap-1 md:gap-1.5 text-[10px] md:text-sm font-medium">
+                          <span className="h-1.5 w-1.5 md:h-2 md:w-2 rounded-full" style={{ backgroundColor: vote.team.color }} />
                           {vote.team.name}
                         </span>
-                        <span className="text-xs text-muted-foreground">•</span>
-                        <span className="text-xs text-muted-foreground">{vote.voter?.user?.name}</span>
+                        <span className="text-[9px] md:text-xs text-muted-foreground">•</span>
+                        <span className="text-[9px] md:text-xs text-muted-foreground">{vote.voter?.user?.name}</span>
                       </div>
                       {vote.comment && (
-                        <p className="text-xs text-zinc-400 mt-1.5 leading-relaxed">{vote.comment}</p>
+                        <p className="text-[9px] md:text-xs text-zinc-400 mt-1 md:mt-1.5 leading-relaxed hidden md:block">{vote.comment}</p>
                       )}
                     </div>
                   </div>
@@ -170,12 +171,12 @@ export default function ConfidencePage() {
 
         {/* Legend */}
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-4 text-xs flex-wrap">
+          <CardContent className="p-2 md:p-4">
+            <div className="flex items-center gap-2 md:gap-4 text-[9px] md:text-xs flex-wrap">
               <span className="font-medium text-muted-foreground">Scale:</span>
               {Object.entries(scoreConfig).map(([score, cfg]) => (
-                <div key={score} className="flex items-center gap-1.5">
-                  <span className={cn("h-3 w-3 rounded", cfg.bg)} />
+                <div key={score} className="flex items-center gap-1 md:gap-1.5">
+                  <span className={cn("h-2 w-2 md:h-3 md:w-3 rounded", cfg.bg)} />
                   <span>{cfg.label}</span>
                 </div>
               ))}
