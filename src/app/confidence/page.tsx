@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCachedApi } from "@/lib/use-cached-api";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -47,16 +47,7 @@ function getTrendIcon(score: number) {
 }
 
 export default function ConfidencePage() {
-  const [data, setData] = useState<ConfidenceData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/confidence")
-      .then((r) => r.json())
-      .then(setData)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+  const { data, loading } = useCachedApi<ConfidenceData>("/api/confidence");
 
   if (loading) {
     return <AppShell><div className="flex items-center justify-center h-64 text-muted-foreground">Loading confidence data...</div></AppShell>;

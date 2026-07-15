@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef, useLayoutEffect } from "react";
+import { useState, useCallback, useRef, useLayoutEffect, useMemo, useEffect } from "react";
+import { useCachedApi } from "@/lib/use-cached-api";
 import { DndContext, DragOverlay, closestCorners, PointerSensor, useSensor, useSensors, type DragStartEvent, type DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { useDroppable } from "@dnd-kit/core";
@@ -119,8 +120,6 @@ function DroppableCell({ cellId, children, isOver }: { cellId: string; children:
 }
 
 export default function BoardPage() {
-  const [data, setData] = useState<BoardData | null>(null);
-  const [loading, setLoading] = useState(true);
   const [selectedTeam, setSelectedTeam] = useState<string>("all");
   const [selectedPI, setSelectedPI] = useState<string>("");
   const [activeStory, setActiveStory] = useState<any>(null);
@@ -130,41 +129,29 @@ export default function BoardPage() {
   const [storyFormOpen, setStoryFormOpen] = useState(false);
   const [editingStory, setEditingStory] = useState<any>(null);
   const [storyFormContext, setStoryFormContext] = useState<{ featureId?: string; teamId?: string; iterationId?: string }>({});
-  const [features, setFeatures] = useState<{ id: string; name: string }[]>([]);
-  const [teamsList, setTeamsList] = useState<any[]>([]);
-  const [iterationsList, setIterationsList] = useState<any[]>([]);
-  const [membersList, setMembersList] = useState<any[]>([]);
 
-  const boardRef = useRef<HTMLDivElement>(null);
-  const [depLines, setDepLines] = useState<{ x1: number; y1: number; x2: number; y2: number; color: string; status: string }[]>([]);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
-  );
-
-  const fetchBoard = useCallback(async (piId?: string) => {
-    setLoading(true);
+  const boardUrl = useMemo(() => {
     const params = new URLSearchParams();
     if (selectedTeam !== "all") params.set("teamId", selectedTeam);
-    if (piId) params.set("piId", piId);
-    try {
-      const r = await fetch(`/api/board?${params.toString()}`);
-      const d = await r.json();
-      setData(d);
-      if (!selectedPI && d.pi) setSelectedPI(d.pi.id);
-      const [featRes, teamRes] = await Promise.all([
-        fetch("/api/features").then(r => r.json()),
-        fetch("/api/teams").then(r => r.json()),
-      ]);
-      setFeatures(featRes.map((f: any) => ({ id: f.id, name: f.name })));
-      setTeamsList(teamRes);
-      setIterationsList(d.pi?.iterations ?? []);
-      setMembersList(teamRes.flatMap((t: any) => t.members ?? []));
-    } catch (e) { console.error(e); }
-    finally { setLoading(false); }
-  }, [selectedTeam]);
+    if (selectedPI) params.set("piId", selectedPI);
+    const qs = params.toString();
+    return `/api/board${qs ? `?${qs}` : ""}`;
+  }, [selectedTeam, selectedPI]);
 
-  useEffect(() => { fetchBoard(selectedPI || undefined); }, [fetchBoard, selectedPI]);
+  const { data, loading, invalidate: invalidateBoard } = useCachedApi<BoardData>(boardUrl);
+  const { data: featuresData, invalidate: invalidateFeatures } = useCachedApi<{ id: string; name: string }[]>("/api/features");
+  const { data: teamsDataRaw, invalidate: invalidateTeams } = useCachedApi<any[]>("/api/teams");
+
+  const features = useMemo(() => featuresData ?? [], [featuresData]);
+  const teamsList = useMemo(() => teamsDataRaw ?? [], [teamsDataRaw]);
+  const iterationsList = useMemo(() => data?.pi?.iterations ?? [], [data]);
+  const membersList = useMemo(() => (teamsDataRaw ?? []).flatMap((t: any) => t.members ?? []), [teamsDataRaw]);
+
+  useEffect(() => {
+    if (data?.pi && !selectedPI) {
+      setSelectedPI(data.pi.id);
+    }
+  }, [data?.pi, selectedPI]);
 
   useLayoutEffect(() => {
     if (!data || !showDependencies || !boardRef.current) {
@@ -228,33 +215,16 @@ export default function BoardPage() {
 
     if (story.teamId === newTeamId && story.iterationId === newIterId) return;
 
-    setData(prev => {
-      if (!prev) return prev;
-      const updatedStories = prev.stories.map(s =>
-        s.id === storyId ? { ...s, teamId: newTeamId, iterationId: newIterId } : s
-      );
-      const updatedTeams = prev.teams.map(t => ({
-        ...t,
-        stories: t.stories.map(s =>
-          s.id === storyId ? { ...s, iteration: prev.pi?.iterations.find(i => i.id === newIterId) ?? s.iteration } : s
-        ).concat(
-          t.id === newTeamId && !t.stories.find(s => s.id === storyId)
-            ? [updatedStories.find(s => s.id === storyId)!].filter(Boolean) as any
-            : []
-        ).filter((s, i, arr) => arr.findIndex(x => x.id === s.id) === i),
-      }));
-      return { ...prev, stories: updatedStories, teams: updatedTeams };
-    });
-
     try {
       await fetch("/api/board", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ storyId, teamId: newTeamId, iterationId: newIterId }),
       });
+      invalidateBoard();
     } catch (e) {
       console.error("DnD update failed:", e);
-      fetchBoard(selectedPI || undefined);
+      invalidateBoard();
     }
   };
 
@@ -305,7 +275,7 @@ export default function BoardPage() {
             <Filter className="h-4 w-4 text-muted-foreground" />
             <select
               value={selectedPI}
-              onChange={(e) => { setSelectedPI(e.target.value); fetchBoard(e.target.value); }}
+              onChange={(e) => { setSelectedPI(e.target.value); }}
               className="h-7 md:h-8 rounded-md border border-zinc-700 bg-zinc-900 px-2 text-[10px] md:text-xs text-zinc-300 focus:outline-none focus:ring-1 focus:ring-zinc-500"
             >
               {data.allPIs.map(pi => <option key={pi.id} value={pi.id}>{pi.name} ({pi.status})</option>)}
@@ -540,7 +510,7 @@ export default function BoardPage() {
           teams={teamsList}
           iterations={iterationsList}
           members={membersList}
-          onSaved={() => fetchBoard(selectedPI || undefined)}
+          onSaved={() => { invalidateBoard(); invalidateFeatures(); }}
         />
       </div>
     </AppShell>

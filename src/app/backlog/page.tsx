@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useCachedApi } from "@/lib/use-cached-api";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -28,7 +29,7 @@ interface Feature {
   stories: { id: string; name: string; status: string; storyPoints: number; team: { name: string } | null; iteration: { name: string } | null; owner: { user: { name: string } } | null }[];
 }
 
-interface Team { id: string; name: string; color: string; }
+interface Team { id: string; name: string; color: string; members?: Member[]; }
 interface Iteration { id: string; name: string; kind: string; }
 interface Member { id: string; teamId: string; role: string; user: { name: string }; }
 
@@ -54,11 +55,14 @@ function computeWsjf(f: { businessValue: number; timeCriticality: number; riskRe
 }
 
 export default function BacklogPage() {
-  const [features, setFeatures] = useState<Feature[]>([]);
-  const [teams, setTeams] = useState<Team[]>([]);
-  const [iterations, setIterations] = useState<Iteration[]>([]);
-  const [members, setMembers] = useState<Member[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: featuresData, loading: featuresLoading, invalidate: invalidateFeatures } = useCachedApi<Feature[]>("/api/features");
+  const { data: teamsData, loading: teamsLoading, invalidate: invalidateTeams } = useCachedApi<Team[]>("/api/teams");
+  const { data: boardData, loading: boardLoading, invalidate: invalidateBoard } = useCachedApi<{ pi?: { iterations: Iteration[] } }>("/api/board");
+  const loading = featuresLoading || teamsLoading || boardLoading;
+  const features = featuresData ?? [];
+  const teams = teamsData ?? [];
+  const iterations = boardData?.pi?.iterations ?? [];
+  const members = teams.flatMap(t => t.members ?? []);
   const [search, setSearch] = useState("");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [featureFormOpen, setFeatureFormOpen] = useState(false);
@@ -67,23 +71,11 @@ export default function BacklogPage() {
   const [editingStory, setEditingStory] = useState<any>(null);
   const [storyFormContext, setStoryFormContext] = useState<{ featureId?: string; teamId?: string; iterationId?: string }>({});
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const [featRes, teamRes, boardRes] = await Promise.all([
-        fetch("/api/features").then(r => r.json()),
-        fetch("/api/teams").then(r => r.json()),
-        fetch("/api/board").then(r => r.json()),
-      ]);
-      setFeatures(featRes);
-      setTeams(teamRes);
-      setIterations(boardRes.pi?.iterations ?? []);
-      setMembers(teamRes.flatMap((t: any) => t.members ?? []));
-    } catch (e) { console.error(e); }
-    finally { setLoading(false); }
+  const refetchAll = () => {
+    invalidateFeatures();
+    invalidateTeams();
+    invalidateBoard();
   };
-
-  useEffect(() => { fetchData(); }, []);
 
   const toggleExpand = (id: string) => {
     setExpanded(prev => {
@@ -246,7 +238,7 @@ export default function BacklogPage() {
           feature={editingFeature}
           artId={features[0]?.artId ?? ""}
           teams={teams}
-          onSaved={fetchData}
+          onSaved={refetchAll}
         />
 
         <StoryForm
@@ -260,7 +252,7 @@ export default function BacklogPage() {
           teams={teams}
           iterations={iterations}
           members={members}
-          onSaved={fetchData}
+          onSaved={refetchAll}
         />
       </div>
     </AppShell>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCachedApi } from "@/lib/use-cached-api";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -26,16 +26,7 @@ interface ObjectiveData {
 }
 
 export default function ObjectivesPage() {
-  const [data, setData] = useState<ObjectiveData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/objectives")
-      .then((r) => r.json())
-      .then(setData)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+  const { data, loading } = useCachedApi<ObjectiveData>("/api/objectives");
 
   const objectives = data?.objectives ?? [];
   const committed = objectives.filter((o) => o.kind === "COMMITTED");

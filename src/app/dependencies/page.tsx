@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCachedApi } from "@/lib/use-cached-api";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -26,20 +26,11 @@ const statusConfig: Record<string, { color: string; icon: React.ComponentType<{ 
 };
 
 export default function DependenciesPage() {
-  const [deps, setDeps] = useState<Dependency[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: deps, loading } = useCachedApi<Dependency[]>("/api/dependencies");
 
-  useEffect(() => {
-    fetch("/api/dependencies")
-      .then((r) => r.json())
-      .then(setDeps)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
-
-  const open = deps.filter((d) => d.status === "OPEN");
-  const resolved = deps.filter((d) => d.status === "RESOLVED");
-  const blocked = deps.filter((d) => d.status === "BLOCKED");
+  const open = (deps ?? []).filter((d) => d.status === "OPEN");
+  const resolved = (deps ?? []).filter((d) => d.status === "RESOLVED");
+  const blocked = (deps ?? []).filter((d) => d.status === "BLOCKED");
 
   return (
     <AppShell>

@@ -1,7 +1,12 @@
 "use client";
 
 import { RoleProvider } from "@/lib/role-context";
+import { CacheProvider } from "@/lib/cache-provider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  return <RoleProvider>{children}</RoleProvider>;
+  return (
+    <CacheProvider>
+      <RoleProvider>{children}</RoleProvider>
+    </CacheProvider>
+  );
 }

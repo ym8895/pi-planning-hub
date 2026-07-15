@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useCachedApi } from "@/lib/use-cached-api";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -43,26 +44,14 @@ const roleColors: Record<string, string> = {
 const COLORS = ["#6366f1", "#10b981", "#f59e0b", "#3b82f6", "#8b5cf6", "#ec4899", "#14b8a6", "#f97316"];
 
 export default function TeamsPage() {
-  const [teams, setTeams] = useState<Team[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: teamsData, loading, invalidate } = useCachedApi<Team[]>("/api/teams");
+  const teams = teamsData ?? [];
   const [editOpen, setEditOpen] = useState(false);
   const [editTeam, setEditTeam] = useState<Team | null>(null);
   const [editName, setEditName] = useState("");
   const [editColor, setEditColor] = useState("");
   const [editVelocity, setEditVelocity] = useState(0);
   const [saving, setSaving] = useState(false);
-
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const r = await fetch("/api/teams");
-      const d = await r.json();
-      setTeams(d);
-    } catch (e) { console.error(e); }
-    finally { setLoading(false); }
-  };
-
-  useEffect(() => { fetchData(); }, []);
 
   const openEdit = (team: Team) => {
     setEditTeam(team);
@@ -77,7 +66,7 @@ export default function TeamsPage() {
     setSaving(true);
     try {
       await updateTeam(editTeam.id, { name: editName, color: editColor, velocity: editVelocity });
-      await fetchData();
+      invalidate();
       setEditOpen(false);
     } catch (e) { console.error(e); }
     finally { setSaving(false); }

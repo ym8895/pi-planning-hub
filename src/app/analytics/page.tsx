@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCachedApi } from "@/lib/use-cached-api";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -49,16 +49,7 @@ interface AnalyticsData {
 const teamColors = ["#6366f1", "#22c55e", "#eab308", "#3b82f6", "#ec4899", "#14b8a6", "#f97316", "#8b5cf6"];
 
 export default function AnalyticsPage() {
-  const [data, setData] = useState<AnalyticsData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/analytics")
-      .then((r) => r.json())
-      .then(setData)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+  const { data, loading } = useCachedApi<AnalyticsData>("/api/analytics");
 
   if (loading) {
     return <AppShell><div className="flex items-center justify-center h-64 text-muted-foreground">Loading analytics...</div></AppShell>;

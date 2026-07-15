@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useCachedApi } from "@/lib/use-cached-api";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -47,20 +48,11 @@ const chartTypes = [
 ];
 
 export default function ChartsPage() {
-  const [data, setData] = useState<ChartsData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data, loading } = useCachedApi<ChartsData>("/api/charts");
   const [selectedTeam, setSelectedTeam] = useState<string>("all");
   const [selectedPi, setSelectedPi] = useState<string>("all");
   const [selectedSprint, setSelectedSprint] = useState<string>("all");
   const [activeChart, setActiveChart] = useState<string>("velocity");
-
-  useEffect(() => {
-    fetch("/api/charts")
-      .then((r) => r.json())
-      .then(setData)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
 
   if (loading) {
     return <AppShell><div className="flex items-center justify-center h-64 text-muted-foreground">Loading charts...</div></AppShell>;

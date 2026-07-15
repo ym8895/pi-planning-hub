@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useRole } from "@/lib/role-context";
+import { useCachedApi } from "@/lib/use-cached-api";
 import {
   Layers, ListTodo, CheckCircle2, AlertCircle, Users, Zap,
   Target, GitBranch, Rocket, ArrowRight, Activity, BarChart3,
@@ -46,13 +46,8 @@ function StatCard({
 }
 
 export default function DashboardPage() {
-  const [data, setData] = useState<DashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data, loading } = useCachedApi<DashboardData>("/api/dashboard");
   const { role, isRTE, isSM, isPO } = useRole();
-
-  useEffect(() => {
-    fetch("/api/dashboard").then(r => r.json()).then(setData).catch(console.error).finally(() => setLoading(false));
-  }, []);
 
   if (loading) return <AppShell><div className="flex items-center justify-center h-64 text-muted-foreground">Loading...</div></AppShell>;
   if (!data) return <AppShell><div className="flex flex-col items-center justify-center h-64 gap-4"><h2 className="text-xl font-semibold">Welcome to PI Planning Hub</h2><p className="text-muted-foreground">No data. Run: <code className="rounded bg-muted px-2 py-0.5 text-sm">npx tsx prisma/seed.ts</code></p></div></AppShell>;

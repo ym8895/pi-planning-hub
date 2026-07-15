@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useCachedApi } from "@/lib/use-cached-api";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -40,24 +41,13 @@ const statusConfig: Record<string, { label: string; color: string; icon: typeof 
 };
 
 export default function PIManagementPage() {
-  const [pis, setPis] = useState<PI[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: piResponse, loading, invalidate } = useCachedApi<{ pis: PI[] }>("/api/pis");
+  const pis = piResponse?.pis ?? [];
   const [createOpen, setCreateOpen] = useState(false);
   const [newName, setNewName] = useState("");
   const [newStart, setNewStart] = useState("");
   const [newEnd, setNewEnd] = useState("");
   const [creating, setCreating] = useState(false);
-
-  const fetchPIs = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/pis").then(r => r.json());
-      setPis(res.pis ?? []);
-    } catch (e) { console.error(e); }
-    finally { setLoading(false); }
-  };
-
-  useEffect(() => { fetchPIs(); }, []);
 
   const handleCreate = async () => {
     if (!newName || !newStart || !newEnd) return;
@@ -72,7 +62,7 @@ export default function PIManagementPage() {
       setNewName("");
       setNewStart("");
       setNewEnd("");
-      fetchPIs();
+      invalidate();
     } catch (e) { console.error(e); }
     finally { setCreating(false); }
   };
@@ -84,7 +74,7 @@ export default function PIManagementPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: piId, status: newStatus }),
       });
-      fetchPIs();
+      invalidate();
     } catch (e) { console.error(e); }
   };
 

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useCachedApi } from "@/lib/use-cached-api";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -43,22 +44,10 @@ interface PiData {
 }
 
 export default function CapacityPage() {
-  const [data, setData] = useState<PiData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data, loading, invalidate } = useCachedApi<PiData>("/api/capacity");
   const [formOpen, setFormOpen] = useState(false);
   const [selectedCap, setSelectedCap] = useState<CapacityData | null>(null);
   const [selectedTeam, setSelectedTeam] = useState<{ name: string; color: string; velocity: number } | null>(null);
-
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/capacity").then((r) => r.json());
-      setData(res);
-    } catch (e) { console.error(e); }
-    finally { setLoading(false); }
-  };
-
-  useEffect(() => { fetchData(); }, []);
 
   const teams = data?.teams ?? [];
   const totalMembers = teams.reduce((s, t) => s + t.members.length, 0);
@@ -178,7 +167,7 @@ export default function CapacityPage() {
             teamName={selectedTeam.name}
             teamColor={selectedTeam.color}
             teamVelocity={selectedTeam.velocity}
-            onSaved={fetchData}
+            onSaved={invalidate}
           />
         )}
       </div>
