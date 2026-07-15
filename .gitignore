@@ -47,3 +47,4 @@ Dockerfile
 docker-compose.yml
 
 .vercel
+.env*
