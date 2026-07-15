@@ -112,7 +112,7 @@ export async function GET() {
         piDaysTotal, piDaysElapsed, piDaysRemaining,
         currentIteration, totalIterations, completedIterations,
       };
-    }, 15);
+    }, 300);
 
     return NextResponse.json(data);
   } catch (error) {

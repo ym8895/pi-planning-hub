@@ -26,7 +26,7 @@ export async function GET() {
       });
 
       return { art, arts };
-    }, 30);
+    }, 300);
 
     return NextResponse.json(data);
   } catch (error) {

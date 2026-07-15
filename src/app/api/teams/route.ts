@@ -19,7 +19,7 @@ export async function GET() {
           capacities: { include: { iteration: true } },
         },
       });
-    }, 30);
+    }, 300);
 
     return NextResponse.json(data);
   } catch (error) {

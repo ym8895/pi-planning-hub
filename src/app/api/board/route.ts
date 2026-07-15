@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 let cached: { data: unknown; ts: number; key: string } | null = null;
-const CACHE_TTL = 15_000;
+const CACHE_TTL = 300_000;
 
 export async function GET(request: Request) {
   try {

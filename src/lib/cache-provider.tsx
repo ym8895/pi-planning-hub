@@ -16,7 +16,7 @@ interface CacheContextType {
 
 const CacheContext = createContext<CacheContextType | null>(null);
 
-const TTL = 30_000; // 30 seconds
+const TTL = 300_000; // 5 minutes
 
 export function CacheProvider({ children }: { children: ReactNode }) {
   const cache = useRef<Map<string, CacheEntry>>(new Map());

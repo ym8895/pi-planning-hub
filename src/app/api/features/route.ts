@@ -21,7 +21,7 @@ export async function GET() {
         },
         orderBy: { createdAt: "desc" },
       });
-    }, 30);
+    }, 300);
 
     return NextResponse.json(data);
   } catch (error) {
