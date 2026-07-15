@@ -1,0 +1,344 @@
+// PI Planning Hub — MVP data model
+// Organization → ART → PI → Iteration → Team/Member → Feature → Story
+// + Objective, Dependency, Holiday, Leave, Capacity
+// PostgreSQL production deployment
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- Auth (NextAuth.js + Prisma adapter) ---
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  passwordHash  String?
+  role          String    @default("VIEWER") // ADMIN | RTE | PM | SM | PO | DEV | QA | VIEWER
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  members       Member[]
+  ownedFeatures Feature[] @relation("FeatureOwner")
+  ownedStories  Story[]   @relation("StoryOwner")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// --- Organization hierarchy ---
+
+model Organization {
+  id          String @id @default(cuid())
+  name        String
+  description String?
+  arts        ART[]
+  holidays    Holiday[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@map("organizations")
+}
+
+model ART {
+  id             String   @id @default(cuid())
+  name           String
+  description    String?
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  pis            PI[]
+  teams          Team[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  @@index([organizationId])
+  @@map("arts")
+}
+
+model PI {
+  id         String   @id @default(cuid())
+  name       String
+  artId      String
+  art        ART      @relation(fields: [artId], references: [id], onDelete: Cascade)
+  startDate  DateTime
+  endDate    DateTime
+  status     String   @default("PLANNING") // PLANNING | EXECUTING | COMPLETED
+  iterations Iteration[]
+  objectives Objective[]
+  risks      Risk[]
+  confidenceVotes ConfidenceVote[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  @@index([artId])
+  @@map("pis")
+}
+
+model Iteration {
+  id         String   @id @default(cuid())
+  name       String
+  piId       String
+  pi         PI       @relation(fields: [piId], references: [id], onDelete: Cascade)
+  startDate  DateTime
+  endDate    DateTime
+  kind       String   @default("SPRINT") // SPRINT | IP
+  stories    Story[]
+  capacities Capacity[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  @@index([piId])
+  @@map("iterations")
+}
+
+// --- Teams & members ---
+
+model Team {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  artId       String
+  art         ART       @relation(fields: [artId], references: [id], onDelete: Cascade)
+  velocity    Float     @default(0)
+  color       String    @default("#6366f1")
+  members     Member[]
+  features    Feature[] @relation("TeamFeatures")
+  stories     Story[]   @relation("TeamStories")
+  capacities  Capacity[]
+  risks       Risk[]
+  confidenceVotes ConfidenceVote[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  @@index([artId])
+  @@map("teams")
+}
+
+model Member {
+  id                  String  @id @default(cuid())
+  userId              String
+  user                User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  teamId              String
+  team                Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  role                String  @default("DEV") // RTE | PM | SM | PO | ARCH | DEV | QA | UX | OTHER
+  availabilityPercent Float   @default(100)
+  leaves              Leave[]
+  ownedRisks          Risk[]
+  confidenceVotes     ConfidenceVote[]
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  @@unique([userId, teamId])
+  @@index([teamId])
+  @@map("members")
+}
+
+// --- Work items ---
+
+model Feature {
+  id                 String   @id @default(cuid())
+  name               String
+  description        String?
+  benefitHypothesis  String?
+  acceptanceCriteria String?
+  artId              String
+  ownerTeamId        String?
+  ownerTeam          Team?    @relation("TeamFeatures", fields: [ownerTeamId], references: [id], onDelete: SetNull)
+  ownerId            String?
+  owner              User?    @relation("FeatureOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+  businessValue      Float    @default(1) // 1-10
+  timeCriticality    Float    @default(1) // 1-10
+  riskReduction      Float    @default(1) // 1-10
+  jobSize            Float    @default(1) // 1-10
+  priority           String   @default("SHOULD") // MUST | SHOULD | COULD
+  status             String   @default("BACKLOG") // BACKLOG | REFINING | PLANNED | IN_PROGRESS | DONE
+  featureType        String   @default("BUSINESS") // BUSINESS | ENABLER
+  stories            Story[]
+  dependenciesAsFrom Dependency[] @relation("DependencyFromFeature")
+  dependenciesAsTo   Dependency[] @relation("DependencyToFeature")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  @@index([artId])
+  @@index([ownerTeamId])
+  @@map("features")
+}
+
+model Story {
+  id                 String   @id @default(cuid())
+  name               String
+  description        String?
+  acceptanceCriteria String?
+  featureId          String
+  feature            Feature  @relation(fields: [featureId], references: [id], onDelete: Cascade)
+  teamId             String?
+  team               Team?    @relation("TeamStories", fields: [teamId], references: [id], onDelete: SetNull)
+  iterationId        String?
+  iteration          Iteration? @relation(fields: [iterationId], references: [id], onDelete: SetNull)
+  ownerId            String?
+  owner              User?    @relation("StoryOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+  storyPoints        Float    @default(0)
+  status             String   @default("TODO") // TODO | DOING | DONE | BLOCKED
+  definitionOfReady  Boolean  @default(false)
+  definitionOfDone   Boolean  @default(false)
+  dependenciesAsFrom Dependency[] @relation("DependencyFromStory")
+  dependenciesAsTo   Dependency[] @relation("DependencyToStory")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  @@index([featureId])
+  @@index([teamId])
+  @@index([iterationId])
+  @@map("stories")
+}
+
+// --- Objectives, dependencies, capacity inputs ---
+
+model Objective {
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  piId         String
+  pi           PI       @relation(fields: [piId], references: [id], onDelete: Cascade)
+  teamId       String?
+  kind         String   @default("COMMITTED") // COMMITTED | STRETCH
+  businessValue Int     @default(0) // 0-10
+  actualValue  Int      @default(0) // 0-10
+  completion   Float    @default(0) // 0-100
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  @@index([piId])
+  @@index([teamId])
+  @@map("objectives")
+}
+
+model Dependency {
+  id            String   @id @default(cuid())
+  type          String   @default("CROSS_TEAM") // CROSS_TEAM | CROSS_ART | INTERNAL
+  status        String   @default("OPEN") // OPEN | RESOLVED | BLOCKED
+  description   String?
+  fromStoryId   String?
+  fromStory     Story?   @relation("DependencyFromStory", fields: [fromStoryId], references: [id], onDelete: Cascade)
+  toStoryId     String?
+  toStory       Story?   @relation("DependencyToStory", fields: [toStoryId], references: [id], onDelete: Cascade)
+  fromFeatureId String?
+  fromFeature   Feature? @relation("DependencyFromFeature", fields: [fromFeatureId], references: [id], onDelete: Cascade)
+  toFeatureId   String?
+  toFeature     Feature? @relation("DependencyToFeature", fields: [toFeatureId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  @@map("dependencies")
+}
+
+model Holiday {
+  id             String   @id @default(cuid())
+  name           String
+  date           DateTime
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now())
+  @@index([organizationId])
+  @@map("holidays")
+}
+
+model Leave {
+  id        String   @id @default(cuid())
+  memberId  String
+  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  startDate DateTime
+  endDate   DateTime
+  reason    String?
+  createdAt DateTime @default(now())
+  @@index([memberId])
+  @@map("leaves")
+}
+
+model Capacity {
+  id              String  @id @default(cuid())
+  teamId          String
+  team            Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  iterationId     String
+  iteration       Iteration @relation(fields: [iterationId], references: [id], onDelete: Cascade)
+  focusFactor     Float   @default(0.8)
+  supportPercent  Float   @default(0.1)
+  meetingsPercent Float   @default(0.1)
+  availableHours  Float   @default(0)
+  plannedPoints   Float   @default(0)
+  plannedHours    Float   @default(0)
+  remainingHours  Float   @default(0)
+  utilization     Float   @default(0)
+  overloaded      Boolean @default(false)
+  @@unique([teamId, iterationId])
+  @@map("capacities")
+}
+
+model Risk {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  roam        String   @default("OPEN") // RESOLVED | OWNED | ACCEPTED | MITIGATED | OPEN
+  impact      String   @default("MEDIUM") // LOW | MEDIUM | HIGH | CRITICAL
+  probability String   @default("MEDIUM") // LOW | MEDIUM | HIGH
+  mitigation  String?
+  ownerId     String?
+  owner       Member?  @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+  teamId      String?
+  team        Team?    @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  piId        String
+  pi          PI       @relation(fields: [piId], references: [id], onDelete: Cascade)
+  status      String   @default("OPEN") // OPEN | MITIGATED | CLOSED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@index([piId])
+  @@index([teamId])
+  @@map("risks")
+}
+
+model ConfidenceVote {
+  id        String   @id @default(cuid())
+  piId      String
+  pi        PI       @relation(fields: [piId], references: [id], onDelete: Cascade)
+  teamId    String
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  score     Int      // 1-5
+  comment   String?
+  voterId   String?
+  voter     Member?  @relation(fields: [voterId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  @@index([piId, teamId])
+  @@map("confidence_votes")
+}
