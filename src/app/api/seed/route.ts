@@ -234,8 +234,8 @@ export async function POST() {
     // Cross-team dependencies
     const allStories = await prisma.story.findMany({ take: 20 });
     if (allStories.length >= 4) {
-      await prisma.dependency.create({ data: { type: "CROSS_TEAM", status: "OPEN", description: "Auth depends on API Gateway", fromStoryId: allStories[0].id, toStoryId: allStories[2].id, piId: pi2.id } });
-      await prisma.dependency.create({ data: { type: "CROSS_TEAM", status: "BLOCKED", description: "Payment depends on Auth", fromStoryId: allStories[4].id, toStoryId: allStories[0].id, piId: pi2.id } });
+      await prisma.dependency.create({ data: { type: "CROSS_TEAM", status: "OPEN", description: "Auth depends on API Gateway", fromStoryId: allStories[0].id, toStoryId: allStories[2].id } });
+      await prisma.dependency.create({ data: { type: "CROSS_TEAM", status: "BLOCKED", description: "Payment depends on Auth", fromStoryId: allStories[4].id, toStoryId: allStories[0].id } });
     }
 
     return NextResponse.json({
