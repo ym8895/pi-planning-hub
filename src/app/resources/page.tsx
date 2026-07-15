@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, Workflow, Download, Cpu, Users, Play } from "lucide-react";
+import { FileText, Workflow, Download, Cpu, Users, Play, BookOpen } from "lucide-react";
 
 export default function ResourcesPage() {
   const [architecture, setArchitecture] = useState<string>("");
   const [workflow, setWorkflow] = useState<string>("");
   const [technology, setTechnology] = useState<string>("");
   const [roles, setRoles] = useState<string>("");
+  const [glossary, setGlossary] = useState<string>("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,12 +20,14 @@ export default function ResourcesPage() {
       fetch("/docs/workflow.md").then((r) => r.text()),
       fetch("/docs/technology.md").then((r) => r.text()),
       fetch("/docs/roles.md").then((r) => r.text()),
+      fetch("/docs/glossary.md").then((r) => r.text()),
     ])
-      .then(([arch, wf, tech, rls]) => {
+      .then(([arch, wf, tech, rls, gl]) => {
         setArchitecture(arch);
         setWorkflow(wf);
         setTechnology(tech);
         setRoles(rls);
+        setGlossary(gl);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -128,8 +131,13 @@ export default function ResourcesPage() {
           <p className="text-xs md:text-sm text-muted-foreground">Architecture, workflow, technology, roles, and SAFe video references</p>
         </div>
 
-        <Tabs defaultValue="architecture" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 h-8 md:h-10">
+        <Tabs defaultValue="glossary" className="w-full">
+          <TabsList className="grid w-full grid-cols-6 h-8 md:h-10">
+            <TabsTrigger value="glossary" className="flex items-center gap-1 md:gap-2 text-[8px] md:text-xs">
+              <BookOpen className="h-3 w-3 md:h-4 md:w-4" />
+              <span className="hidden md:inline">Glossary</span>
+              <span className="md:hidden">Terms</span>
+            </TabsTrigger>
             <TabsTrigger value="architecture" className="flex items-center gap-1 md:gap-2 text-[8px] md:text-xs">
               <FileText className="h-3 w-3 md:h-4 md:w-4" />
               <span className="hidden md:inline">Architecture</span>
@@ -154,6 +162,26 @@ export default function ResourcesPage() {
               Videos
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="glossary" className="mt-2 md:mt-4">
+            <Card>
+              <CardHeader className="pb-2 md:pb-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 md:gap-2">
+                    <BookOpen className="h-4 w-4 md:h-5 md:w-5 text-violet-400" />
+                    <CardTitle className="text-xs md:text-sm">SAFe & PI Planning — Key Terms & Learning</CardTitle>
+                  </div>
+                  <a href="/docs/glossary.md" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[9px] md:text-xs text-muted-foreground hover:text-foreground transition-colors">
+                    <Download className="h-2.5 w-2.5 md:h-3 md:w-3" />
+                    <span className="hidden md:inline">Download</span>
+                  </a>
+                </div>
+              </CardHeader>
+              <CardContent className="prose prose-invert max-w-none p-2 md:p-4">
+                {renderMarkdown(glossary)}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="architecture" className="mt-2 md:mt-4">
             <Card>
