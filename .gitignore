@@ -45,3 +45,5 @@ src/generated/
 # docker
 Dockerfile
 docker-compose.yml
+
+.vercel
