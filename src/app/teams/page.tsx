@@ -27,7 +27,7 @@ interface Team {
   members: TeamMember[];
   stories: { id: string; status: string; storyPoints: number }[];
   features: { id: string; name: string; status: string }[];
-  capacities: { id: string; utilization: number; overloaded: boolean; iteration: { name: string } }[];
+  capacities: { id: string; utilization: number; overloaded: boolean; availableHours: number; plannedHours: number; iteration: { name: string } }[];
 }
 
 const roleColors: Record<string, string> = {
@@ -91,7 +91,9 @@ export default function TeamsPage() {
               const doneCount = team.stories.filter(s => s.status === "DONE").length;
               const totalPoints = team.stories.reduce((sum, s) => sum + s.storyPoints, 0);
               const latestCapacity = team.capacities[0];
-              const utilization = latestCapacity ? Math.round(latestCapacity.utilization * 100) : 0;
+              const utilization = latestCapacity && latestCapacity.availableHours > 0
+                ? Math.round((latestCapacity.plannedHours / latestCapacity.availableHours) * 100)
+                : 0;
 
               return (
                 <Card key={team.id} className="relative overflow-hidden">
