@@ -4,14 +4,13 @@ import { useEffect, useState } from "react";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, Workflow, Download, Cpu, Users, BookOpen } from "lucide-react";
+import { FileText, Workflow, Download, Cpu, Users, Play } from "lucide-react";
 
 export default function ResourcesPage() {
   const [architecture, setArchitecture] = useState<string>("");
   const [workflow, setWorkflow] = useState<string>("");
   const [technology, setTechnology] = useState<string>("");
   const [roles, setRoles] = useState<string>("");
-  const [books, setBooks] = useState<string>("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,14 +19,12 @@ export default function ResourcesPage() {
       fetch("/docs/workflow.md").then((r) => r.text()),
       fetch("/docs/technology.md").then((r) => r.text()),
       fetch("/docs/roles.md").then((r) => r.text()),
-      fetch("/docs/books.md").then((r) => r.text()),
     ])
-      .then(([arch, wf, tech, rls, bk]) => {
+      .then(([arch, wf, tech, rls]) => {
         setArchitecture(arch);
         setWorkflow(wf);
         setTechnology(tech);
         setRoles(rls);
-        setBooks(bk);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -128,7 +125,7 @@ export default function ResourcesPage() {
         <div>
           <a href="/dashboard" className="text-[10px] md:text-xs text-muted-foreground hover:text-foreground transition-colors">&larr; Back to Dashboard</a>
           <h1 className="text-lg md:text-2xl font-bold">Resources</h1>
-          <p className="text-xs md:text-sm text-muted-foreground">Architecture, workflow, technology, roles, and SAFe reference materials</p>
+          <p className="text-xs md:text-sm text-muted-foreground">Architecture, workflow, technology, roles, and SAFe video references</p>
         </div>
 
         <Tabs defaultValue="architecture" className="w-full">
@@ -152,9 +149,9 @@ export default function ResourcesPage() {
               <Users className="h-3 w-3 md:h-4 md:w-4" />
               Roles
             </TabsTrigger>
-            <TabsTrigger value="books" className="flex items-center gap-1 md:gap-2 text-[8px] md:text-xs">
-              <BookOpen className="h-3 w-3 md:h-4 md:w-4" />
-              Books
+            <TabsTrigger value="videos" className="flex items-center gap-1 md:gap-2 text-[8px] md:text-xs">
+              <Play className="h-3 w-3 md:h-4 md:w-4" />
+              Videos
             </TabsTrigger>
           </TabsList>
 
@@ -238,30 +235,37 @@ export default function ResourcesPage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="books" className="mt-2 md:mt-4">
+          <TabsContent value="videos" className="mt-2 md:mt-4">
             <Card>
               <CardHeader className="pb-2 md:pb-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 md:gap-2">
-                    <BookOpen className="h-4 w-4 md:h-5 md:w-5 text-violet-400" />
-                    <CardTitle className="text-xs md:text-sm">SAFe 6.0 Product Owner / Product Manager Workbook</CardTitle>
-                  </div>
-                  <a href="/docs/SAFe-6.0-PO-PM-Workbook.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[9px] md:text-xs text-muted-foreground hover:text-foreground transition-colors">
-                    <Download className="h-2.5 w-2.5 md:h-3 md:w-3" />
-                    <span className="hidden md:inline">Open PDF</span>
-                  </a>
+                <div className="flex items-center gap-1.5 md:gap-2">
+                  <Play className="h-4 w-4 md:h-5 md:w-5 text-red-400" />
+                  <CardTitle className="text-xs md:text-sm">SAFe PI Planning — Video Series</CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className="p-2 md:p-4">
-                <div className="mb-4 text-xs text-muted-foreground">
-                  Full SAFe 6.0 PO/PM workbook — reference for PI Planning, WSJF prioritization, feature writing, and team backlog management.
+              <CardContent className="p-2 md:p-4 space-y-4">
+                <p className="text-xs md:text-sm text-muted-foreground">
+                  In-depth video walkthrough of SAFe PI Planning — from prep work through execution and inspect & adapt.
+                </p>
+                <div className="rounded-lg border border-zinc-700 overflow-hidden">
+                  <iframe
+                    src="https://www.youtube.com/embed/videoseries?list=PLE6XrAXqINHl2nVs4Tl3K0hRN1vh-Od7Q"
+                    className="w-full"
+                    style={{ height: "calc(100vh - 300px)", minHeight: "400px" }}
+                    title="SAFe PI Planning Video Series"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
                 </div>
-                <iframe
-                  src="/docs/SAFe-6.0-PO-PM-Workbook.pdf"
-                  className="w-full rounded-lg border border-zinc-700"
-                  style={{ height: "calc(100vh - 280px)", minHeight: "500px" }}
-                  title="SAFe 6.0 PO/PM Workbook"
-                />
+                <a
+                  href="https://www.youtube.com/watch?v=DlL9IkQZRM8&list=PLE6XrAXqINHl2nVs4Tl3K0hRN1vh-Od7Q"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs md:text-sm text-red-400 hover:text-red-300 transition-colors"
+                >
+                  <Play className="h-3 w-3" />
+                  Open full playlist on YouTube
+                </a>
               </CardContent>
             </Card>
           </TabsContent>
