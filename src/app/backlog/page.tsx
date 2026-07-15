@@ -41,7 +41,7 @@ const statusColors: Record<string, string> = {
   DONE: "bg-emerald-500/15 text-emerald-400",
   TODO: "bg-zinc-500/15 text-zinc-400",
   DOING: "bg-blue-500/15 text-blue-400",
-  BLOCKED: "bg-amber-500/15 text-amber-400",
+  BLOCKED: "bg-rose-500/15 text-rose-400",
 };
 
 const priorityColors: Record<string, string> = {

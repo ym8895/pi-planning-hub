@@ -41,7 +41,7 @@ const statusColors: Record<string, string> = {
   TODO: "bg-zinc-500/15 border-zinc-500/30 text-zinc-400",
   DOING: "bg-blue-500/15 border-blue-500/30 text-blue-400",
   DONE: "bg-emerald-500/15 border-emerald-500/30 text-emerald-400",
-  BLOCKED: "bg-amber-500/15 border-amber-500/30 text-amber-400",
+  BLOCKED: "bg-rose-500/15 border-rose-500/30 text-rose-400",
 };
 
 const sprintColors = [
