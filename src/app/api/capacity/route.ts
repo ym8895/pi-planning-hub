@@ -1,8 +1,15 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+let cached: { data: unknown; ts: number } | null = null;
+const CACHE_TTL = 15_000;
+
 export async function GET() {
   try {
+    if (cached && Date.now() - cached.ts < CACHE_TTL) {
+      return NextResponse.json(cached.data);
+    }
+
     const art = await prisma.aRT.findFirst();
     if (!art) return NextResponse.json({ pi: null, teams: [] });
 
@@ -18,34 +25,39 @@ export async function GET() {
     if (!pi) return NextResponse.json({ pi: null, teams: [] });
 
     const teams = await prisma.team.findMany({
-      include: {
-        members: { include: { user: true } },
+      select: {
+        id: true,
+        name: true,
+        color: true,
+        velocity: true,
+        members: { select: { id: true, user: { select: { name: true } } } },
         capacities: {
           where: { iteration: { piId: pi.id } },
-          include: { iteration: true },
-          orderBy: { iteration: { startDate: "asc" } },
-        },
-        features: {
-          where: { status: { in: ["PLANNED", "IN_PROGRESS"] } },
-          include: {
-            stories: {
-              where: { iteration: { piId: pi.id } },
-              select: { storyPoints: true },
-            },
+          select: {
+            id: true, utilization: true, overloaded: true,
+            availableHours: true, plannedHours: true, plannedPoints: true,
+            focusFactor: true, supportPercent: true, meetingsPercent: true,
+            iterationId: true,
+            iteration: { select: { name: true } },
           },
+          orderBy: { iteration: { startDate: "asc" } },
         },
       },
       orderBy: { name: "asc" },
     });
 
+    const storyAgg = await prisma.story.groupBy({
+      by: ["teamId"],
+      where: { feature: { status: { in: ["PLANNED", "IN_PROGRESS"] } }, iteration: { piId: pi.id } },
+      _sum: { storyPoints: true },
+    });
+    const pointsMap = new Map(storyAgg.map((r) => [r.teamId, r._sum.storyPoints ?? 0]));
+
     const teamsWithMetrics = teams.map((t) => {
-      const totalPoints = t.features.reduce(
-        (sum, f) => sum + f.stories.reduce((s, st) => s + (st.storyPoints || 0), 0),
-        0
-      );
+      const totalPoints = pointsMap.get(t.id) ?? 0;
       const totalPlanned = t.capacities.reduce((s, c) => s + c.plannedPoints, 0);
       const avgUtil = t.capacities.length > 0
-        ? t.capacities.reduce((s, c) => s + c.utilization, 0) / t.capacities.length
+        ? t.capacities.reduce((s, c) => s + (c.availableHours > 0 ? c.plannedHours / c.availableHours : 0), 0) / t.capacities.length
         : 0;
 
       return {
@@ -57,7 +69,9 @@ export async function GET() {
       };
     });
 
-    return NextResponse.json({ pi, teams: teamsWithMetrics });
+    const result = { pi, teams: teamsWithMetrics };
+    cached = { data: result, ts: Date.now() };
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Capacity API error:", error);
     return NextResponse.json({ error: "Failed to load capacity" }, { status: 500 });
@@ -86,7 +100,16 @@ export async function PATCH(request: Request) {
 
     const updated = await prisma.capacity.update({ where: { id }, data });
 
-    return NextResponse.json(updated);
+    const recalc = await prisma.capacity.findUnique({ where: { id } });
+    if (recalc && recalc.availableHours > 0) {
+      const newUtil = recalc.plannedHours / recalc.availableHours;
+      await prisma.capacity.update({
+        where: { id },
+        data: { utilization: newUtil * 100, overloaded: newUtil > 1 },
+      });
+    }
+
+    return NextResponse.json({ ...updated, ...recalc });
   } catch (error) {
     console.error("Capacity PATCH error:", error);
     return NextResponse.json({ error: "Failed to update capacity" }, { status: 500 });

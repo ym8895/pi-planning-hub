@@ -1,11 +1,19 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+let cached: { data: unknown; ts: number; key: string } | null = null;
+const CACHE_TTL = 15_000;
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const teamFilter = searchParams.get("teamId");
     const piFilter = searchParams.get("piId");
+    const cacheKey = `board:${teamFilter || ""}:${piFilter || ""}`;
+
+    if (cached && cached.key === cacheKey && Date.now() - cached.ts < CACHE_TTL) {
+      return NextResponse.json(cached.data);
+    }
 
     const art = await prisma.aRT.findFirst();
     if (!art) return NextResponse.json({ pi: null, allPIs: [], teams: [], stories: [], dependencies: [] });
@@ -18,17 +26,17 @@ export async function GET(request: Request) {
 
     const executingPI = await prisma.pI.findFirst({
       where: { artId: art.id, status: "EXECUTING" },
-      include: { iterations: { orderBy: { startDate: "asc" } } },
+      select: { id: true, name: true, status: true, startDate: true, endDate: true, iterations: { select: { id: true, name: true, startDate: true, endDate: true }, orderBy: { startDate: "asc" } } },
     });
     const planningPI = await prisma.pI.findFirst({
       where: { artId: art.id, status: "PLANNING" },
-      include: { iterations: { orderBy: { startDate: "asc" } } },
+      select: { id: true, name: true, status: true, startDate: true, endDate: true, iterations: { select: { id: true, name: true, startDate: true, endDate: true }, orderBy: { startDate: "asc" } } },
     });
     let pi = executingPI ?? planningPI;
     if (piFilter) {
       const filtered = await prisma.pI.findFirst({
         where: { id: piFilter },
-        include: { iterations: { orderBy: { startDate: "asc" } } },
+        select: { id: true, name: true, status: true, startDate: true, endDate: true, iterations: { select: { id: true, name: true, startDate: true, endDate: true }, orderBy: { startDate: "asc" } } },
       });
       if (filtered) pi = filtered;
     }
@@ -38,10 +46,14 @@ export async function GET(request: Request) {
 
     const teams = await prisma.team.findMany({
       where: teamWhere,
-      include: {
+      select: {
+        id: true, name: true, color: true, velocity: true,
         stories: {
           where: pi ? { iteration: { piId: pi.id } } : undefined,
-          include: { iteration: true, feature: true },
+          select: { id: true, name: true, status: true, storyPoints: true, teamId: true, iterationId: true, featureId: true,
+            iteration: { select: { id: true, name: true } },
+            feature: { select: { id: true, name: true, featureType: true, status: true } },
+          },
         },
       },
       orderBy: { name: "asc" },
@@ -53,24 +65,31 @@ export async function GET(request: Request) {
 
     const stories = await prisma.story.findMany({
       where: storyWhere,
-      include: { team: true, iteration: true, feature: true },
+      select: { id: true, name: true, status: true, storyPoints: true, teamId: true, iterationId: true, featureId: true,
+        team: { select: { id: true, name: true, color: true } },
+        iteration: { select: { id: true, name: true } },
+        feature: { select: { id: true, name: true, featureType: true, status: true } },
+      },
     });
 
     const storyIds = stories.map(s => s.id);
-    const dependencies = await prisma.dependency.findMany({
+    const dependencies = storyIds.length > 0 ? await prisma.dependency.findMany({
       where: {
         OR: [
           { fromStoryId: { in: storyIds } },
           { toStoryId: { in: storyIds } },
         ],
       },
-      include: {
-        fromStory: { include: { team: true } },
-        toStory: { include: { team: true } },
+      select: {
+        id: true, type: true, status: true, description: true, fromStoryId: true, toStoryId: true,
+        fromStory: { select: { id: true, name: true, team: { select: { id: true, name: true, color: true } } } },
+        toStory: { select: { id: true, name: true, team: { select: { id: true, name: true, color: true } } } },
       },
-    });
+    }) : [];
 
-    return NextResponse.json({ pi, allPIs, teams, stories, dependencies });
+    const result = { pi, allPIs, teams, stories, dependencies };
+    cached = { data: result, ts: Date.now(), key: cacheKey };
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Board API error:", error);
     return NextResponse.json({ error: "Failed to load board" }, { status: 500 });
