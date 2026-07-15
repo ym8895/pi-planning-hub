@@ -1,117 +1,119 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getCached } from "@/lib/cache";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    // Get the active PI (EXECUTING or PLANNING), fallback to most recent
-    const art = await prisma.aRT.findFirst({
-      include: {
-        organization: true,
-        teams: true,
-        pis: {
-          orderBy: { createdAt: "desc" },
-          include: {
-            iterations: { orderBy: { startDate: "asc" } },
-            objectives: true,
+    const data = await getCached("dashboard", async () => {
+      const art = await prisma.aRT.findFirst({
+        include: {
+          organization: true,
+          teams: true,
+          pis: {
+            orderBy: { createdAt: "desc" },
+            include: {
+              iterations: { orderBy: { startDate: "asc" } },
+              objectives: true,
+            },
           },
         },
-      },
-    });
+      });
 
-    if (!art) return NextResponse.json(null);
+      if (!art) return null;
 
-    const currentPI = art.pis.find(p => p.status === "EXECUTING") ?? art.pis.find(p => p.status === "PLANNING") ?? art.pis[0];
-    const artId = art.id;
+      const currentPI = art.pis.find(p => p.status === "EXECUTING") ?? art.pis.find(p => p.status === "PLANNING") ?? art.pis[0];
+      const artId = art.id;
 
-    const [
-      features, featuresDone, featuresInProgress, featuresPlanned, featuresBacklog, featuresRefining,
-      featuresBusiness, featuresEnabler,
-      stories, done, inProgress, blocked, todo,
-      totalPointsResult, completedPointsResult,
-    ] = await Promise.all([
-      prisma.feature.count({ where: { artId } }),
-      prisma.feature.count({ where: { artId, status: "DONE" } }),
-      prisma.feature.count({ where: { artId, status: "IN_PROGRESS" } }),
-      prisma.feature.count({ where: { artId, status: "PLANNED" } }),
-      prisma.feature.count({ where: { artId, status: "BACKLOG" } }),
-      prisma.feature.count({ where: { artId, status: "REFINING" } }),
-      prisma.feature.count({ where: { artId, featureType: "BUSINESS" } }),
-      prisma.feature.count({ where: { artId, featureType: "ENABLER" } }),
-      prisma.story.count({ where: { feature: { artId } } }),
-      prisma.story.count({ where: { feature: { artId }, status: "DONE" } }),
-      prisma.story.count({ where: { feature: { artId }, status: "DOING" } }),
-      prisma.story.count({ where: { feature: { artId }, status: "BLOCKED" } }),
-      prisma.story.count({ where: { feature: { artId }, status: "TODO" } }),
-      prisma.story.aggregate({ where: { feature: { artId } }, _sum: { storyPoints: true } }),
-      prisma.story.aggregate({ where: { feature: { artId }, status: "DONE" }, _sum: { storyPoints: true } }),
-    ]);
+      const [features, stories] = await Promise.all([
+        prisma.feature.groupBy({
+          by: ["status", "featureType"],
+          where: { artId },
+          _count: true,
+        }),
+        prisma.story.groupBy({
+          by: ["status"],
+          where: { feature: { artId } },
+          _count: true,
+          _sum: { storyPoints: true },
+        }),
+      ]);
 
-    // Dependencies - fetch all and count in JS to avoid complex nested OR on SQLite
-    const allDeps = await prisma.dependency.findMany({
-      where: {
-        OR: [
-          { fromFeatureId: { not: null } },
-          { toFeatureId: { not: null } },
-          { fromStoryId: { not: null } },
-          { toStoryId: { not: null } },
-        ],
-      },
-      include: {
-        fromFeature: { select: { artId: true } },
-        toFeature: { select: { artId: true } },
-        fromStory: { select: { feature: { select: { artId: true } } } },
-        toStory: { select: { feature: { select: { artId: true } } } },
-      },
-    });
-    const artDeps = allDeps.filter(d =>
-      d.fromFeature?.artId === artId || d.toFeature?.artId === artId ||
-      d.fromStory?.feature?.artId === artId || d.toStory?.feature?.artId === artId
-    );
-    const openDependencies = artDeps.filter(d => d.status === "OPEN").length;
-    const blockedDependencies = artDeps.filter(d => d.status === "BLOCKED").length;
+      const featureCounts: Record<string, number> = {};
+      const typeCounts: Record<string, number> = {};
+      features.forEach(f => {
+        featureCounts[f.status] = (featureCounts[f.status] || 0) + f._count;
+        typeCounts[f.featureType] = (typeCounts[f.featureType] || 0) + f._count;
+      });
 
-    // Objectives
-    const objectives = currentPI?.objectives.length ?? 0;
-    const committedObjectives = currentPI?.objectives.filter(o => o.kind === "COMMITTED").length ?? 0;
-    const stretchObjectives = currentPI?.objectives.filter(o => o.kind === "STRETCH").length ?? 0;
-    const avgCompletion = objectives > 0
-      ? (currentPI?.objectives.reduce((sum, o) => sum + o.completion, 0) ?? 0) / objectives
-      : 0;
+      const storyCounts: Record<string, number> = {};
+      let totalPoints = 0, completedPoints = 0;
+      stories.forEach(s => {
+        storyCounts[s.status] = (storyCounts[s.status] || 0) + s._count;
+        totalPoints += s._sum.storyPoints || 0;
+        if (s.status === "DONE") completedPoints += s._sum.storyPoints || 0;
+      });
 
-    // PI Timeline
-    let piDaysTotal = 0, piDaysElapsed = 0, piDaysRemaining = 0;
-    let currentIteration = "", totalIterations = 0, completedIterations = 0;
+      const depCounts = await prisma.dependency.groupBy({
+        by: ["status"],
+      });
+      const depMap: Record<string, number> = {};
+      depCounts.forEach(d => { depMap[d.status] = d._count; });
 
-    if (currentPI) {
-      const start = new Date(currentPI.startDate).getTime();
-      const end = new Date(currentPI.endDate).getTime();
-      const now = Date.now();
-      piDaysTotal = Math.max(1, Math.ceil((end - start) / 86400000));
-      piDaysElapsed = Math.min(piDaysTotal, Math.max(0, Math.ceil((now - start) / 86400000)));
-      piDaysRemaining = Math.max(0, Math.ceil((end - now) / 86400000));
-      totalIterations = currentPI.iterations.length;
-      completedIterations = currentPI.iterations.filter(it => new Date(it.endDate).getTime() < now).length;
-      currentIteration = currentPI.iterations.find(it => {
-        const itStart = new Date(it.startDate).getTime();
-        const itEnd = new Date(it.endDate).getTime();
-        return now >= itStart && now <= itEnd;
-      })?.name ?? "";
-    }
+      const objectives = currentPI?.objectives ?? [];
+      const committedObjectives = objectives.filter(o => o.kind === "COMMITTED").length;
+      const stretchObjectives = objectives.filter(o => o.kind === "STRETCH").length;
+      const avgCompletion = objectives.length > 0
+        ? objectives.reduce((sum, o) => sum + o.completion, 0) / objectives.length
+        : 0;
 
-    return NextResponse.json({
-      art, currentPI,
-      features, featuresDone, featuresInProgress, featuresPlanned, featuresBacklog, featuresRefining,
-      featuresBusiness, featuresEnabler,
-      stories, done, inProgress, blocked, todo,
-      totalPoints: totalPointsResult._sum.storyPoints ?? 0,
-      completedPoints: completedPointsResult._sum.storyPoints ?? 0,
-      teams: art.teams.length,
-      velocity: art.teams.reduce((sum, t) => sum + t.velocity, 0),
-      objectives, committedObjectives, stretchObjectives, completion: avgCompletion,
-      openDependencies, blockedDependencies,
-      piDaysTotal, piDaysElapsed, piDaysRemaining,
-      currentIteration, totalIterations, completedIterations,
-    });
+      let piDaysTotal = 0, piDaysElapsed = 0, piDaysRemaining = 0;
+      let currentIteration = "", totalIterations = 0, completedIterations = 0;
+
+      if (currentPI) {
+        const start = new Date(currentPI.startDate).getTime();
+        const end = new Date(currentPI.endDate).getTime();
+        const now = Date.now();
+        piDaysTotal = Math.max(1, Math.ceil((end - start) / 86400000));
+        piDaysElapsed = Math.min(piDaysTotal, Math.max(0, Math.ceil((now - start) / 86400000)));
+        piDaysRemaining = Math.max(0, Math.ceil((end - now) / 86400000));
+        totalIterations = currentPI.iterations.length;
+        completedIterations = currentPI.iterations.filter(it => new Date(it.endDate).getTime() < now).length;
+        currentIteration = currentPI.iterations.find(it => {
+          const itStart = new Date(it.startDate).getTime();
+          const itEnd = new Date(it.endDate).getTime();
+          return now >= itStart && now <= itEnd;
+        })?.name ?? "";
+      }
+
+      return {
+        art, currentPI,
+        features: featureCounts["BACKLOG"] || 0,
+        featuresDone: featureCounts["DONE"] || 0,
+        featuresInProgress: featureCounts["IN_PROGRESS"] || 0,
+        featuresPlanned: featureCounts["PLANNED"] || 0,
+        featuresBacklog: featureCounts["BACKLOG"] || 0,
+        featuresRefining: featureCounts["REFINING"] || 0,
+        featuresBusiness: typeCounts["BUSINESS"] || 0,
+        featuresEnabler: typeCounts["ENABLER"] || 0,
+        stories: storyCounts["TODO"] + storyCounts["DOING"] + storyCounts["DONE"] + storyCounts["BLOCKED"] || 0,
+        done: storyCounts["DONE"] || 0,
+        inProgress: storyCounts["DOING"] || 0,
+        blocked: storyCounts["BLOCKED"] || 0,
+        todo: storyCounts["TODO"] || 0,
+        totalPoints, completedPoints,
+        teams: art.teams.length,
+        velocity: art.teams.reduce((sum, t) => sum + t.velocity, 0),
+        objectives: objectives.length, committedObjectives, stretchObjectives, completion: avgCompletion,
+        openDependencies: depMap["OPEN"] || 0,
+        blockedDependencies: depMap["BLOCKED"] || 0,
+        piDaysTotal, piDaysElapsed, piDaysRemaining,
+        currentIteration, totalIterations, completedIterations,
+      };
+    }, 15);
+
+    return NextResponse.json(data);
   } catch (error) {
     console.error("Dashboard API error:", error);
     return NextResponse.json({ error: "Failed to load dashboard" }, { status: 500 });

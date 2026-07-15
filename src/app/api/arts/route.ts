@@ -1,27 +1,34 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getCached } from "@/lib/cache";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const art = await prisma.aRT.findFirst({
-      include: {
-        organization: true,
-        _count: { select: { teams: true, pis: true } },
-      },
-    });
+    const data = await getCached("arts", async () => {
+      const art = await prisma.aRT.findFirst({
+        include: {
+          organization: true,
+          _count: { select: { teams: true, pis: true } },
+        },
+      });
 
-    if (!art) return NextResponse.json({ art: null, arts: [] });
+      if (!art) return { art: null, arts: [] };
 
-    const arts = await prisma.aRT.findMany({
-      include: {
-        organization: true,
-        teams: { select: { id: true, name: true, color: true, velocity: true } },
-        _count: { select: { teams: true, pis: true } },
-      },
-      orderBy: { name: "asc" },
-    });
+      const arts = await prisma.aRT.findMany({
+        include: {
+          organization: true,
+          teams: { select: { id: true, name: true, color: true, velocity: true } },
+          _count: { select: { teams: true, pis: true } },
+        },
+        orderBy: { name: "asc" },
+      });
 
-    return NextResponse.json({ art, arts });
+      return { art, arts };
+    }, 30);
+
+    return NextResponse.json(data);
   } catch (error) {
     console.error("ART API error:", error);
     return NextResponse.json({ error: "Failed to load ARTs" }, { status: 500 });
