@@ -246,14 +246,22 @@ export default function ResourcesPage() {
                     <BookOpen className="h-4 w-4 md:h-5 md:w-5 text-violet-400" />
                     <CardTitle className="text-xs md:text-sm">SAFe 6.0 Product Owner / Product Manager Workbook</CardTitle>
                   </div>
-                  <a href="/docs/books.md" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[9px] md:text-xs text-muted-foreground hover:text-foreground transition-colors">
+                  <a href="/docs/SAFe-6.0-PO-PM-Workbook.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[9px] md:text-xs text-muted-foreground hover:text-foreground transition-colors">
                     <Download className="h-2.5 w-2.5 md:h-3 md:w-3" />
-                    <span className="hidden md:inline">Download</span>
+                    <span className="hidden md:inline">Open PDF</span>
                   </a>
                 </div>
               </CardHeader>
-              <CardContent className="prose prose-invert max-w-none p-2 md:p-4">
-                {renderMarkdown(books)}
+              <CardContent className="p-2 md:p-4">
+                <div className="mb-4 text-xs text-muted-foreground">
+                  Full SAFe 6.0 PO/PM workbook — reference for PI Planning, WSJF prioritization, feature writing, and team backlog management.
+                </div>
+                <iframe
+                  src="/docs/SAFe-6.0-PO-PM-Workbook.pdf"
+                  className="w-full rounded-lg border border-zinc-700"
+                  style={{ height: "calc(100vh - 280px)", minHeight: "500px" }}
+                  title="SAFe 6.0 PO/PM Workbook"
+                />
               </CardContent>
             </Card>
           </TabsContent>
