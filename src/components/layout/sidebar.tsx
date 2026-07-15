@@ -83,14 +83,14 @@ export function Sidebar() {
           className={cn(
             vertical
               ? "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors"
-              : "flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
+              : "flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium transition-colors",
             isActive
               ? "bg-indigo-500/20 text-indigo-400"
               : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
           )}
           title={collapsed ? item.label : undefined}
         >
-          <item.icon className={cn(vertical ? "h-4 w-4" : "h-3.5 w-3.5", "shrink-0")} />
+          <item.icon className={cn(vertical ? "h-4 w-4" : "h-4 w-4", "shrink-0")} />
           {(vertical || !collapsed) && <span>{item.label}</span>}
         </Link>
       );
@@ -133,7 +133,7 @@ export function Sidebar() {
     <aside
       className={cn(
         "hidden md:flex flex-col border-r border-zinc-800 bg-zinc-900 transition-all duration-300",
-        collapsed ? "w-16" : "w-56"
+        collapsed ? "w-16" : "w-60"
       )}
     >
       <div className="flex h-12 items-center border-b border-zinc-800 px-3">
