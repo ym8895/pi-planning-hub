@@ -30,7 +30,7 @@ const roamConfig: Record<string, { label: string; color: string; bgColor: string
   OWNED: { label: "Owned", color: "text-blue-400", bgColor: "bg-blue-500/10 border-blue-500/20", icon: Eye },
   ACCEPTED: { label: "Accepted", color: "text-amber-400", bgColor: "bg-amber-500/10 border-amber-500/20", icon: Shield },
   MITIGATED: { label: "Mitigated", color: "text-violet-400", bgColor: "bg-violet-500/10 border-violet-500/20", icon: Shield },
-  OPEN: { label: "Open", color: "text-zinc-400", bgColor: "bg-zinc-500/10 border-zinc-500/20", icon: AlertTriangle },
+  OPEN: { label: "Open", color: "text-muted-foreground", bgColor: "bg-muted border-border", icon: AlertTriangle },
 };
 
 const impactColors: Record<string, string> = {
@@ -132,7 +132,7 @@ export default function RisksPage() {
                       {risk.mitigation && (
                         <div className="text-[9px] md:text-[11px] hidden md:block">
                           <span className="font-medium text-muted-foreground">Mitigation: </span>
-                          <span className="text-zinc-300">{risk.mitigation}</span>
+                          <span className="text-foreground">{risk.mitigation}</span>
                         </div>
                       )}
                       <div className="flex items-center gap-1.5 md:gap-2 text-[9px] md:text-[10px] text-muted-foreground">

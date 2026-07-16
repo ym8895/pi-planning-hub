@@ -107,7 +107,7 @@ export function CapacityForm({ open, onClose, capacity, teamName, teamColor, tea
 
         {capacity && (
           <div className="space-y-4">
-            <div className="rounded-lg bg-zinc-900/50 p-3 space-y-2">
+            <div className="rounded-lg bg-muted/50 p-3 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Available Hours</span>
                 <span className="font-medium">{capacity.availableHours}h</span>

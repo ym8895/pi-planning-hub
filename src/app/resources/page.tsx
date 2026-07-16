@@ -47,8 +47,8 @@ export default function ResourcesPage() {
       if (line.startsWith("```")) {
         if (inCodeBlock) {
           elements.push(
-            <pre key={`code-${i}`} className="bg-zinc-900 border border-zinc-700 rounded-lg p-4 my-4 overflow-x-auto">
-              <code className="text-sm text-zinc-100">{codeContent.trim()}</code>
+            <pre key={`code-${i}`} className="bg-muted border border-border rounded-lg p-4 my-4 overflow-x-auto">
+              <code className="text-sm text-foreground">{codeContent.trim()}</code>
             </pre>
           );
           codeContent = "";
@@ -74,7 +74,7 @@ export default function ResourcesPage() {
         elements.push(<h4 key={i} className="text-lg font-bold mt-4 mb-2 text-foreground">{line.slice(5)}</h4>);
       }
       else if (line.startsWith("---")) {
-        elements.push(<hr key={i} className="my-6 border-zinc-700" />);
+        elements.push(<hr key={i} className="my-6 border-border" />);
       }
       else if (line.startsWith("> ")) {
         elements.push(
@@ -275,7 +275,7 @@ export default function ResourcesPage() {
                 <p className="text-xs md:text-sm text-muted-foreground">
                   In-depth video walkthrough of SAFe PI Planning — from prep work through execution and inspect & adapt.
                 </p>
-                <div className="rounded-lg border border-zinc-700 overflow-hidden">
+                <div className="rounded-lg border border-border overflow-hidden">
                   <iframe
                     src="https://www.youtube.com/embed/videoseries?list=PLE6XrAXqINHl2nVs4Tl3K0hRN1vh-Od7Q"
                     className="w-full"

@@ -159,7 +159,7 @@ export default function TeamsPage() {
                         {team.members.map(m => (
                           <div key={m.id} className="flex items-center justify-between text-[10px] md:text-sm">
                             <span className="truncate">{m.user.name}</span>
-                            <Badge className={cn("text-[9px] md:text-[10px]", roleColors[m.role] ?? "bg-zinc-500/15 text-zinc-400")}>
+                            <Badge className={cn("text-[9px] md:text-[10px]", roleColors[m.role] ?? "bg-muted text-muted-foreground")}>
                               {m.role}
                             </Badge>
                           </div>

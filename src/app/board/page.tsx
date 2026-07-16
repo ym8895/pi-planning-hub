@@ -38,10 +38,10 @@ interface BoardData {
 }
 
 const statusColors: Record<string, string> = {
-  TODO: "bg-zinc-500/15 border-zinc-500/30 text-zinc-400",
-  DOING: "bg-blue-500/15 border-blue-500/30 text-blue-400",
-  DONE: "bg-emerald-500/15 border-emerald-500/30 text-emerald-400",
-  BLOCKED: "bg-rose-500/15 border-rose-500/30 text-rose-400",
+  TODO: "bg-muted border-border text-muted-foreground",
+  DOING: "bg-blue-500/15 border-blue-500/30 text-blue-600 dark:text-blue-400",
+  DONE: "bg-emerald-500/15 border-emerald-500/30 text-emerald-600 dark:text-emerald-400",
+  BLOCKED: "bg-rose-500/15 border-rose-500/30 text-rose-600 dark:text-rose-400",
 };
 
 const sprintColors = [
@@ -110,8 +110,8 @@ function DroppableCell({ cellId, children, isOver }: { cellId: string; children:
     <div
       ref={setNodeRef}
       className={cn(
-        "min-h-[80px] p-1.5 border-r border-zinc-800 last:border-r-0 transition-colors",
-        isOver ? "bg-blue-500/10 ring-1 ring-inset ring-blue-500/30" : "bg-zinc-950/20"
+        "min-h-[80px] p-1.5 border-r border-border last:border-r-0 transition-colors",
+        isOver ? "bg-blue-500/10 ring-1 ring-inset ring-blue-500/30" : "bg-muted/30"
       )}
     >
       {children}
@@ -283,14 +283,14 @@ export default function BoardPage() {
             <select
               value={selectedPI}
               onChange={(e) => { setSelectedPI(e.target.value); }}
-              className="h-7 md:h-8 rounded-md border border-zinc-700 bg-zinc-900 px-2 text-[10px] md:text-xs text-zinc-300 focus:outline-none focus:ring-1 focus:ring-zinc-500"
+              className="h-7 md:h-8 rounded-md border border-input bg-background px-2 text-[10px] md:text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
             >
               {data.allPIs.map(pi => <option key={pi.id} value={pi.id}>{pi.name} ({pi.status})</option>)}
             </select>
             <select
               value={selectedTeam}
               onChange={(e) => setSelectedTeam(e.target.value)}
-              className="h-7 md:h-8 rounded-md border border-zinc-700 bg-zinc-900 px-2 text-[10px] md:text-xs text-zinc-300 focus:outline-none focus:ring-1 focus:ring-zinc-500"
+              className="h-7 md:h-8 rounded-md border border-input bg-background px-2 text-[10px] md:text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
             >
               <option value="all">All Teams</option>
               {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
@@ -326,7 +326,7 @@ export default function BoardPage() {
           {teams.map(t => {
             const pts = t.stories.reduce((s: number, st: any) => s + st.storyPoints, 0);
             return (
-              <div key={t.id} className="flex items-center gap-1 md:gap-1.5 rounded-full border border-zinc-800 bg-zinc-900/50 px-2 md:px-2.5 py-0.5 md:py-1">
+              <div key={t.id} className="flex items-center gap-1 md:gap-1.5 rounded-full border border-border bg-card px-2 md:px-2.5 py-0.5 md:py-1">
                 <span className="h-1.5 w-1.5 md:h-2 md:w-2 rounded-full shrink-0" style={{ backgroundColor: t.color }} />
                 <span className="text-[10px] md:text-xs font-medium">{t.name}</span>
                 <span className="text-[9px] md:text-[10px] text-muted-foreground">{pts}pt</span>
@@ -345,11 +345,11 @@ export default function BoardPage() {
             setOverCellId(overId?.startsWith("cell-") ? overId : null);
           }}
         >
-          <div className="overflow-x-auto rounded-xl border border-zinc-800">
+          <div className="overflow-x-auto rounded-xl border border-border">
             <div ref={boardRef} className="relative">
               <div className="grid" style={{ gridTemplateColumns: `repeat(${numCols}, 1fr)` }}>
                 {iterStats.map((it, idx) => (
-                  <div key={it.id} className={cn("px-2 py-2.5 text-center border-r border-zinc-800 last:border-r-0 bg-gradient-to-b", it.kind === "IP" ? sprintColors[5] : sprintColors[idx] ?? sprintColors[0])}>
+                    <div key={it.id} className={cn("px-2 py-2.5 text-center border-r border-border last:border-r-0 bg-gradient-to-b", it.kind === "IP" ? sprintColors[5] : sprintColors[idx] ?? sprintColors[0])}>
                     <div className="font-medium text-xs">{it.name}</div>
                     <div className="text-[10px] text-muted-foreground mt-0.5">
                       {it.count} stories • {it.total} pts
@@ -363,8 +363,8 @@ export default function BoardPage() {
                 const teamPts = team.stories.reduce((s: number, st: any) => s + st.storyPoints, 0);
                 const teamDone = team.stories.filter((s: any) => s.status === "DONE").reduce((s: number, st: any) => s + st.storyPoints, 0);
                 return (
-                  <div key={team.id} className="border-t border-zinc-800">
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-zinc-900/40 border-b border-zinc-800/50">
+                    <div key={team.id} className="border-t border-border">
+                      <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/40 border-b border-border/50">
                       <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: team.color }} />
                       <span className="text-xs font-semibold">{team.name}</span>
                       <span className="text-[10px] text-muted-foreground">
@@ -415,7 +415,7 @@ export default function BoardPage() {
                 <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" style={{ overflow: "visible" }}>
                   <defs>
                     <marker id="dep-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-                      <polygon points="0 0, 8 3, 0 6" fill="currentColor" className="text-zinc-400" />
+                      <polygon points="0 0, 8 3, 0 6" fill="currentColor" className="text-muted-foreground" />
                     </marker>
                   </defs>
                   {depLines.map((line, i) => {
@@ -465,7 +465,7 @@ export default function BoardPage() {
               <h3 className="text-sm font-medium mb-3">Cross-Team Dependencies ({data.dependencies.length})</h3>
               <div className="grid gap-2">
                 {data.dependencies.map(dep => (
-                  <div key={dep.id} className="flex items-center gap-3 rounded-lg border border-zinc-800 p-3 bg-zinc-900/20">
+                  <div key={dep.id} className="flex items-center gap-3 rounded-lg border border-border p-3 bg-card/20">
                     <Badge variant={dep.status === "RESOLVED" ? "default" : dep.status === "BLOCKED" ? "destructive" : "secondary"} className="text-[10px] shrink-0 w-16 justify-center">{dep.status}</Badge>
                     <div className="flex items-center gap-2 text-xs min-w-0">
                       <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: dep.fromStory?.team?.color }} />

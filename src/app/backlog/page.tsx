@@ -34,12 +34,12 @@ interface Iteration { id: string; name: string; kind: string; }
 interface Member { id: string; teamId: string; role: string; user: { name: string }; }
 
 const statusColors: Record<string, string> = {
-  BACKLOG: "bg-zinc-500/15 text-zinc-400",
+  BACKLOG: "bg-muted text-muted-foreground",
   REFINING: "bg-blue-500/15 text-blue-400",
   PLANNED: "bg-indigo-500/15 text-indigo-400",
   IN_PROGRESS: "bg-amber-500/15 text-amber-400",
   DONE: "bg-emerald-500/15 text-emerald-400",
-  TODO: "bg-zinc-500/15 text-zinc-400",
+  TODO: "bg-muted text-muted-foreground",
   DOING: "bg-blue-500/15 text-blue-400",
   BLOCKED: "bg-rose-500/15 text-rose-400",
 };
@@ -47,7 +47,7 @@ const statusColors: Record<string, string> = {
 const priorityColors: Record<string, string> = {
   MUST: "bg-red-500/15 text-red-400",
   SHOULD: "bg-amber-500/15 text-amber-400",
-  COULD: "bg-zinc-500/15 text-zinc-400",
+  COULD: "bg-muted text-muted-foreground",
 };
 
 function computeWsjf(f: { businessValue: number; timeCriticality: number; riskReduction: number; jobSize: number }) {
@@ -139,11 +139,11 @@ export default function BacklogPage() {
             {filtered.map((f, idx) => {
               const isExpanded = expanded.has(f.id);
               return (
-                <div key={f.id} className="rounded-lg border border-zinc-800 overflow-hidden">
+                <div key={f.id} className="rounded-lg border border-border overflow-hidden">
                   <div
                     className={cn(
-                      "flex items-center gap-2 md:gap-3 px-2 py-2 md:px-4 md:py-3 cursor-pointer hover:bg-zinc-900/50 transition-colors",
-                      isExpanded && "bg-zinc-900/30"
+                      "flex items-center gap-2 md:gap-3 px-2 py-2 md:px-4 md:py-3 cursor-pointer hover:bg-accent/50 transition-colors",
+                      isExpanded && "bg-accent/30"
                     )}
                     onClick={() => toggleExpand(f.id)}
                   >
@@ -181,7 +181,7 @@ export default function BacklogPage() {
                   </div>
 
                   {isExpanded && (
-                    <div className="border-t border-zinc-800 bg-zinc-950/30 px-2 py-2 md:px-4 md:py-3">
+                    <div className="border-t border-border bg-muted/30 px-2 py-2 md:px-4 md:py-3">
                       {f.stories.length === 0 ? (
                         <div className="text-center py-2 md:py-4">
                           <p className="text-[10px] md:text-xs text-muted-foreground mb-2">No stories yet</p>
@@ -197,7 +197,7 @@ export default function BacklogPage() {
                       ) : (
                         <div className="space-y-1.5">
                           {f.stories.map(s => (
-                            <div key={s.id} className="flex items-center gap-2 md:gap-3 px-2 py-1.5 md:px-3 md:py-2 rounded-md bg-zinc-900/50 hover:bg-zinc-900 transition-colors">
+                            <div key={s.id} className="flex items-center gap-2 md:gap-3 px-2 py-1.5 md:px-3 md:py-2 rounded-md bg-card hover:bg-accent transition-colors">
                               <Badge className={cn("text-[9px] md:text-[10px] w-16 justify-center", statusColors[s.status])}>{s.status}</Badge>
                               <span className="text-[10px] md:text-sm flex-1 truncate">{s.name}</span>
                               {s.team && <span className="text-[10px] md:text-xs text-muted-foreground hidden md:block">{s.team.name}</span>}

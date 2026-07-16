@@ -116,7 +116,7 @@ export default function ConfidencePage() {
                   </div>
                   <div className="text-[9px] md:text-xs text-muted-foreground">{tc.voteCount} vote(s)</div>
                   {tc.latestComment && (
-                    <p className="text-[9px] md:text-[11px] text-zinc-400 leading-relaxed italic hidden md:block">
+                    <p className="text-[9px] md:text-[11px] text-muted-foreground leading-relaxed italic hidden md:block">
                       "{tc.latestComment}"
                     </p>
                   )}
@@ -136,7 +136,7 @@ export default function ConfidencePage() {
               {data.votes.map((vote) => {
                 const info = getScoreInfo(vote.score);
                 return (
-                  <div key={vote.id} className="flex items-start gap-2 md:gap-4 rounded-lg border border-zinc-800 p-2 md:p-4">
+                  <div key={vote.id} className="flex items-start gap-2 md:gap-4 rounded-lg border border-border p-2 md:p-4">
                     <div className={cn("rounded-lg px-1.5 py-1 md:px-2 md:py-1 text-[10px] md:text-sm font-bold shrink-0", info.bg, info.color)}>
                       {vote.score}
                     </div>
@@ -150,7 +150,7 @@ export default function ConfidencePage() {
                         <span className="text-[9px] md:text-xs text-muted-foreground">{vote.voter?.user?.name}</span>
                       </div>
                       {vote.comment && (
-                        <p className="text-[9px] md:text-xs text-zinc-400 mt-1 md:mt-1.5 leading-relaxed hidden md:block">{vote.comment}</p>
+                        <p className="text-[9px] md:text-xs text-muted-foreground mt-1 md:mt-1.5 leading-relaxed hidden md:block">{vote.comment}</p>
                       )}
                     </div>
                   </div>

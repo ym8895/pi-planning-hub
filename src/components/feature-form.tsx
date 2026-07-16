@@ -222,7 +222,7 @@ export function FeatureForm({ open, onClose, feature, artId, teams, onSaved }: F
             </Select>
           </div>
 
-          <div className="space-y-3 pt-2 border-t border-zinc-800">
+          <div className="space-y-3 pt-2 border-t border-border">
             <div className="flex items-center justify-between">
               <Label className="text-sm font-medium">WSJF Inputs</Label>
               <span className="text-sm font-bold text-indigo-400">WSJF: {wsjf}</span>

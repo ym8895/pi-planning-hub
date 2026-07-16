@@ -135,7 +135,7 @@ export default function CapacityPage() {
                       return (
                         <div
                           key={cap.id}
-                          className="flex items-center gap-1.5 md:gap-2 px-2 py-1.5 md:px-3 md:py-2 rounded-md bg-zinc-900/50 hover:bg-zinc-900 transition-colors group cursor-pointer"
+                          className="flex items-center gap-1.5 md:gap-2 px-2 py-1.5 md:px-3 md:py-2 rounded-md bg-card hover:bg-accent transition-colors group cursor-pointer"
                           onClick={() => {
                             setSelectedCap(cap);
                             setSelectedTeam({ name: team.name, color: team.color, velocity: team.velocity });

@@ -44,7 +44,7 @@ export function ARTSelector({ onARTChange }: ARTSelectorProps) {
 
   const currentART = arts.find((a) => a.id === selectedART);
 
-  if (loading) return <div className="h-8 w-48 bg-zinc-900 rounded animate-pulse" />;
+  if (loading) return <div className="h-8 w-48 bg-muted rounded animate-pulse" />;
   if (arts.length === 0) return null;
 
   return (

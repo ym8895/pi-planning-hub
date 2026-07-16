@@ -239,7 +239,7 @@ export default function AnalyticsPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-[9px] md:text-xs">
                 <thead>
-                  <tr className="border-b border-zinc-800">
+                  <tr className="border-b border-border">
                     <th className="text-left py-1.5 px-2 md:py-2 md:px-3 text-muted-foreground font-medium">Team</th>
                     {data.pis.map(pi => (
                       <th key={pi.id} className="text-center py-1.5 px-2 md:py-2 md:px-3 text-muted-foreground font-medium">{pi.name}</th>
@@ -248,7 +248,7 @@ export default function AnalyticsPage() {
                 </thead>
                 <tbody>
                   {data.teams.map(team => (
-                    <tr key={team.id} className="border-b border-zinc-800/50">
+                    <tr key={team.id} className="border-b border-border/50">
                       <td className="py-1.5 px-2 md:py-2 md:px-3">
                         <div className="flex items-center gap-1 md:gap-2">
                           <span className="h-1.5 w-1.5 md:h-2 md:w-2 rounded-full" style={{ backgroundColor: team.color }} />
